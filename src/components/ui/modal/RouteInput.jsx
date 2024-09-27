@@ -1,4 +1,4 @@
-const Input = ({
+const RouteInput = ({
   id,
   label,
   type = "text",
@@ -52,4 +52,4 @@ const Input = ({
     </div>
   );
 };
-export default Input;
+export default RouteInput;
