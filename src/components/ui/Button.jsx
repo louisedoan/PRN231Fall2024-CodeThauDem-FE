@@ -1,7 +1,7 @@
-const Button = ({ label, handleClick, containerStyles }) => {
+const Button = ({ label, onClick, containerStyles }) => {
     return (
       <button
-        onClick={handleClick}
+        onClick={onClick}
         className={`custom-btn ${containerStyles} disabled:opacity-70 disabled:cursor-not-allowed`}
       >
         {label}

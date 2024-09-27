@@ -1,7 +1,6 @@
 import Logo from "../navbar/Logo";
 import { Link } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaTwitter, FaGithub } from "react-icons/fa";
-import Container from "../../ui/Container";
 
 const Footer = () => {
   return (
