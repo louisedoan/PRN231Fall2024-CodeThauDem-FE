@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "./Modal";
-import Heading from "../../ui/modal/Heading";
+import Heading from "./Heading";
 import { ClipLoader } from "react-spinners";
-import Input from "../Input";
+import RouteInput from "./RouteInput";
 import { IoAirplaneSharp } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import PassengerControl from "../PassengerControl";
@@ -36,7 +36,7 @@ const InputModal = () => {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading title="Welcome ! " subtitle="Pick your trip options" />
-      <Input
+      <RouteInput
         id="email"
         label="Departure airport"
         icon={<IoAirplaneSharp size={25} />}
@@ -44,7 +44,7 @@ const InputModal = () => {
         date="Departing"
       />
 
-      <Input
+      <RouteInput
         id="password"
         label="Arrival airport"
         icon={

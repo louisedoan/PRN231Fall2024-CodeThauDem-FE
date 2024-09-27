@@ -3,8 +3,14 @@ import Container from "../../ui/Container";
 import Item from "../../ui/ItemSelection";
 import Button from "../../ui/Button";
 import Logo from "./Logo";
+import useLoginModal from "../../hooks/useLoginModal";
+import useRegisterModal from "../../hooks/useRegisterModal";
 
 const Navbar = () => {
+
+  const loginModal = useLoginModal();
+  const registerModal = useRegisterModal();
+
   return (
     <div className="sticky top-0 z-40 w-full bg-white shadow-sm overflow-hidden">
       <div className=" border-b-[1px]">
@@ -23,6 +29,7 @@ const Navbar = () => {
             <div className="flex flex-row justify-between gap-3">
               <Button
                 label="Login"
+                onClick={loginModal.onOpen}
                 containerStyles="hover:no-underline hover:rounded-tl-3xl hover:rounded-br-2xl hover:bg-secondary transition-all duration-100 ease-out clickable flex items-center whitespace-nowrap justify-center font-semibold p-3 sm-bold-caps gap-x-2 border border-primary
     hover:text-black hover:border-primary
     active:border-primary active:text-black
@@ -30,6 +37,7 @@ const Navbar = () => {
               />
               <Button
                 label="Sign up"
+                onClick={registerModal.onOpen}
                 containerStyles="hover:no-underline hover:rounded-tl-3xl hover:rounded-br-2xl hover:bg-secondary transition-all duration-100 ease-out clickable flex items-center whitespace-nowrap justify-center font-semibold p-3 sm-bold-caps gap-x-2 border border-primary
     hover:text-black hover:border-primary 
     active:border-primary active:text-black

@@ -13,6 +13,7 @@ export const OptionBtn = () => {
           name="inlineRadioOptions"
           id="inlineRadio1"
           value="option1"
+          defaultChecked
         />
         <label
           className="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
