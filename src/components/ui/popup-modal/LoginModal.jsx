@@ -8,7 +8,6 @@ import useRegisterModal from "../../hooks/useRegisterModal";
 import PopUpModal from "./PopupModal";
 import ModalHead from "./ModalHead";
 import toast from "react-hot-toast";
-import Button from "../Button";
 import useLoginModal from "../../hooks/useLoginModal";
 import { useDispatch } from "react-redux";
 import { ClipLoader } from "react-spinners";
