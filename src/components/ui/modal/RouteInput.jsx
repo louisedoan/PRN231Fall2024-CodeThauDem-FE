@@ -8,7 +8,7 @@ const RouteInput = ({
   icon,
   isShowOnly,
   fixedPassenger,
-  date
+  date,
 }) => {
   return (
     <div className="w-full flex overflow-hidden border-2 border-black relative bg-white rounded-2xl">
@@ -45,7 +45,6 @@ const RouteInput = ({
         </label>
       </div>
 
-      
       <button className="flex p-2 items-center border-l-2 border-grey-300 flex-row justify-start pr-14">
         <div className="flex ml-[10px] flex-shrink-0 font-semibold">{date}</div>
       </button>

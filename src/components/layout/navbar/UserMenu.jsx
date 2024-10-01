@@ -50,7 +50,7 @@ const UserMenu = ({ currentUser }) => {
       >
         <span>Welcome</span>
         <MovingBtn>
-          {currentUser} <IoMdArrowDropdown size={25} />
+          {currentUser.Email} <IoMdArrowDropdown size={25} />
         </MovingBtn>
       </div>
 

@@ -1,10 +1,10 @@
-import { configureStore } from '@reduxjs/toolkit'; 
-import usersSlice,{setCurrentUser} from './reducers/userSlice';
-
+import { configureStore } from "@reduxjs/toolkit";
+import usersSlice, { setCurrentUser } from "./reducers/userSlice";
+import flightReducer from "../redux/reducers/flightSlice";
 const store = configureStore({
   reducer: {
     users: usersSlice,
-
+    flights: flightReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
