@@ -1,5 +1,6 @@
 import Container from "../components/ui/Container";
 import { HeroCover } from "../components/ui/HeroCover";
+import FlightBookingForm from "../components/ui/modal/FlightBookingForm";
 import InputModal from "../components/ui/modal/InputModal";
 const Home = () => {
   return (
@@ -14,8 +15,8 @@ const Home = () => {
               </h1>
             </div>
             <div className="w-full lg:w-1/2 mt-8 lg:mt-0">
-              <div className="input-section">
-                <InputModal />
+              <div className="input-section mb-10">
+                <FlightBookingForm />
               </div>
             </div>
           </div>
