@@ -37,7 +37,7 @@ const Navbar = () => {
              {/* Conditional rendering based on whether user is logged in */}
             <div className="flex flex-row justify-between gap-3">
               {currentUser ? (
-                <UserMenu currentUser={currentUser.Email} />
+                <UserMenu currentUser={currentUser} />
               ) : (
                 <>
                   <Button
