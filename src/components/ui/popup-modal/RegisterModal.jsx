@@ -12,15 +12,12 @@ import useLoginModal from "../../hooks/useLoginModal";
 import { ClipLoader } from "react-spinners";
 import { registerUser } from "../../../lib/api/Authen";
 
-const emailUsernameRegex = /^[a-zA-Z0-9.]+$/;
+//const emailUsernameRegex = /^[a-zA-Z0-9.]+$/;
 
 const schema = yup.object().shape({
   email: yup
     .string()
-    .matches(
-      emailUsernameRegex,
-      "Email is invalid. Only letters (a-z), numbers (0-9), and periods (.) are allowed."
-    )
+    .email("Email is invalid. Please enter a valid email address.")
     .required("Email is required"),
   password: yup
     .string()
@@ -53,8 +50,7 @@ const RegisterModal = () => {
     async (data) => {
       try {
         setIsLoading(true);
-        const emailWithDomain = `${data.email}@gmail.com`;
-        await registerUser(emailWithDomain, data.password);
+        await registerUser(data.email, data.password);
         setIsLoading(false);
         registerModal.onClose();
         toast.success("User registered successfuly!");
@@ -90,7 +86,6 @@ const RegisterModal = () => {
       <InputField
         id="email"
         label="Email"
-        domain="@gmail.com"
         disabled={isLoading}
         register={register}
         errors={errors}
