@@ -5,7 +5,8 @@ import Footer from "./components/layout/footer/Footer";
 import { BackgroundBeamsWithCollision } from "../src/components/ui/BackgroundEffect";
 import LoginModal from "./components/ui/popup-modal/LoginModal";
 import { Provider } from "react-redux";
-import store from "./lib/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./lib/redux/store";
 import RegisterModal from "./components/ui/popup-modal/RegisterModal";
 import ToasterProvider from "./provider/ToastProvider";
 import FlightRoutePage from "./pages/FlightRoutePage";
@@ -15,22 +16,24 @@ function App() {
   return (
     <>
       <Provider store={store}>
-        <Router>
-          <Navbar />
-          <ToasterProvider />
-          <LoginModal />
-          <RegisterModal />
+        <PersistGate loading={null} persistor={persistor}>
+          <Router>
+            <Navbar />
+            <ToasterProvider />
+            <LoginModal />
+            <RegisterModal />
 
-          <BackgroundBeamsWithCollision>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="flight-route" element={<FlightRoutePage />} />
-              <Route path="/profile/:userId" element={<Profile />} />
-            </Routes>
-          </BackgroundBeamsWithCollision>
+            <BackgroundBeamsWithCollision>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="flight-route" element={<FlightRoutePage />} />
+                <Route path="/profile/:userId" element={<Profile />} />
+              </Routes>
+            </BackgroundBeamsWithCollision>
 
-          <Footer />
-        </Router>
+            <Footer />
+          </Router>
+        </PersistGate>
       </Provider>
     </>
   );

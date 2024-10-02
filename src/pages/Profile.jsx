@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchUserData, updateUser } from "../lib/api/User"; // Import các API từ User.jsx
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Profile = () => {
-  const { userId } = useParams(); // Lấy userId từ URL
+  const { id } = useParams(); // Lấy userId từ URL
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.users.detailUser.data);
   const currentUser = useSelector((state) => state.users.currentUser); // Lấy thông tin người dùng từ Redux
   const [profileData, setProfileData] = useState({
     password: "",
@@ -18,27 +20,32 @@ const Profile = () => {
   const [error, setError] = useState("");
 
   // Lấy thông tin người dùng từ API
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const data = await fetchUserData(userId);
-        setProfileData({
-          password: data.password,
-          gender: data.gender,
-          nationality: data.nationality,
-          address: data.address,
-          fullname: data.fullname,
-          dob: data.dob,
-        });
-      } catch (err) {
-        setError(err.message);
-      }
-    };
 
-    if (currentUser?.id) {
-      getUserData();
+  useEffect(() => {
+    const userId = id || currentUser?.ID;
+    if (userId) {
+      getUserData(userId);
+      console.log(userId);
     }
-  }, [userId, currentUser?.id]);
+  }, [id, currentUser]);
+
+  const getUserData = async (userId) => {
+    try {
+      console.log("stop here");
+      await dispatch(fetchUserData(userId));
+      // setProfileData({
+      //   password: userId.password,
+      //   gender: userId.gender,
+      //   nationality: userId.nationality,
+      //   address: userId.address,
+      //   fullname: userId.fullname,
+      //   dob: userId.dob,
+      // });
+    } catch (err) {
+      console.error("Failed to fetch user data:", error);
+      setError(err.message);
+    }
+  };
 
   // Hàm xử lý cập nhật thông tin người dùng
   const handleUpdate = async () => {
@@ -68,7 +75,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={currentUser?.email}
+              value={user.email}
               disabled
               className="block w-2/3 p-3 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
             />
@@ -81,7 +88,7 @@ const Profile = () => {
             </label>
             <input
               type="password"
-              value={profileData.password}
+              value={user.password} // tai sao password lai null?
               onChange={(e) =>
                 setProfileData({ ...profileData, password: e.target.value })
               }
@@ -95,7 +102,7 @@ const Profile = () => {
               Gender
             </label>
             <select
-              value={profileData.gender}
+              value={user.gender}
               onChange={(e) =>
                 setProfileData({ ...profileData, gender: e.target.value })
               }
@@ -113,7 +120,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={profileData.nationality}
+              value={user.nationality}
               onChange={(e) =>
                 setProfileData({
                   ...profileData,
@@ -131,7 +138,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={profileData.address}
+              value={user.address}
               onChange={(e) =>
                 setProfileData({ ...profileData, address: e.target.value })
               }
@@ -146,7 +153,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={profileData.fullname}
+              value={user.fullname}
               onChange={(e) =>
                 setProfileData({ ...profileData, fullname: e.target.value })
               }
@@ -161,7 +168,7 @@ const Profile = () => {
             </label>
             <input
               type="date"
-              value={profileData.dob?.substring(0, 10)} // Hiển thị chỉ ngày tháng
+              value={user.dob?.substring(0, 10)} // Hiển thị chỉ ngày tháng
               onChange={(e) =>
                 setProfileData({ ...profileData, dob: e.target.value })
               }

@@ -100,7 +100,7 @@ const UserMenu = ({ currentUser }) => {
               ) : (
                 <>
                   <MenuItem
-                    onClick={() => navigate(`/profile/${currentUser.id}`)} // Điều hướng tới trang Profile với userId
+                    onClick={() => navigate(`/profile/${currentUser.ID}`)} // Điều hướng tới trang Profile với userId
                     label="My profile"
                     icon={<CgProfile size={20} />}
                   />
