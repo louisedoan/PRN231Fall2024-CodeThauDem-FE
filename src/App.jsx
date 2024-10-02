@@ -9,6 +9,7 @@ import store from "./lib/redux/store";
 import RegisterModal from "./components/ui/popup-modal/RegisterModal";
 import ToasterProvider from "./provider/ToastProvider";
 import FlightRoutePage from "./pages/FlightRoutePage";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="flight-route" element={<FlightRoutePage />} />
+              <Route path="/profile/:userId" element={<Profile />} />
             </Routes>
           </BackgroundBeamsWithCollision>
 

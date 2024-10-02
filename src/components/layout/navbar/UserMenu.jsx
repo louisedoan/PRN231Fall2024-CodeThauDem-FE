@@ -8,17 +8,17 @@ import { CgProfile } from "react-icons/cg";
 import { FaHistory } from "react-icons/fa";
 import { HiOutlineLogin } from "react-icons/hi";
 import toast from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { MdDashboard, MdManageAccounts } from "react-icons/md";
 import {
-    clearCurrentUser,
-    setCurrentUser,
-  } from "../../../lib/redux/reducers/userSlice";
+  clearCurrentUser,
+  setCurrentUser,
+} from "../../../lib/redux/reducers/userSlice";
 
 const UserMenu = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const ToggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -39,8 +39,6 @@ const UserMenu = ({ currentUser }) => {
     toast.success("Logout Successful !");
     navigate("/");
   }, [dispatch, navigate]);
-
-  
 
   return (
     <div className="relative">
@@ -102,7 +100,7 @@ const UserMenu = ({ currentUser }) => {
               ) : (
                 <>
                   <MenuItem
-                    onClick={() => {}}
+                    onClick={() => navigate(`/profile/${currentUser.id}`)} // Điều hướng tới trang Profile với userId
                     label="My profile"
                     icon={<CgProfile size={20} />}
                   />
