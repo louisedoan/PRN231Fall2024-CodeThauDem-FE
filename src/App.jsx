@@ -10,6 +10,7 @@ import RegisterModal from "./components/ui/popup-modal/RegisterModal";
 import ToasterProvider from "./provider/ToastProvider";
 import FlightRoutePage from "./pages/FlightRoutePage";
 import FlightChoose from "./pages/FlightChoose";
+import FlightBookingForm from "./pages/FlightBookingForm";
 function App() {
   return (
     <>
@@ -25,7 +26,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="flight-route" element={<FlightRoutePage />} />
               <Route path="flight-choose" element={<FlightChoose />} />
+              <Route path="flight-booking" element={<FlightBookingForm />} />
             </Routes>
+
           </BackgroundBeamsWithCollision>
 
           <Footer />
