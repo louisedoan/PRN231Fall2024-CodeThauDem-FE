@@ -5,7 +5,7 @@ import InputModal from "../components/ui/modal/InputModal";
 const Home = () => {
   return (
     <>
-      <div className="w-full">
+      <div className="w-full ">
         <Container>
           <div className="flex flex-col lg:flex-row items-center justify-between lg:space-x-8">
             <div className="w-full lg:w-1/2">
