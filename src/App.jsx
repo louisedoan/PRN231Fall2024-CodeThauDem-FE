@@ -51,7 +51,7 @@ function App() {
         </Routes>
       </BackgroundBeamsWithCollision>
 
-      {location.pathname !== "/" && currentUser?.Role !== "Admin" && <Footer />}
+      {currentUser?.Role !== "Admin" && <Footer />}
     </>
   );
 }
