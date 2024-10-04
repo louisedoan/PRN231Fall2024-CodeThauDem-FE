@@ -7,7 +7,7 @@ import { BASE_URL } from "../../api/config/axios-client";
 export const fetchFlights = createAsyncThunk(
   "flights/fetchFlights",
   async () => {
-    const response = await axios.get(BASE_URL + "/api/v1/flights/query");
+    const response = await axios.get(BASE_URL + "/api/v1/flightroutes/get-all");
 
     return response.data;
   }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IoAirplaneSharp } from "react-icons/io5";
-import { fetchFlights } from "../../../lib/redux/reducers/flightSlice";
+import { fetchFlights } from "../../../lib/redux/reducers/flightSlice"; // Adjust import to fetchFlights
 import Button from "../Button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -20,14 +20,14 @@ const FlightBookingForm = () => {
   const [infantCount, setInfantCount] = useState(0);
 
   const dispatch = useDispatch();
-  const departureLocations = useSelector((state) => state.flights.flightList);
+  const flights = useSelector((state) => state.flights.flightList?.data || []);
 
-  // Lấy danh sách chuyến bay từ API
+  // Fetch list of flights from API
   useEffect(() => {
     dispatch(fetchFlights());
   }, [dispatch]);
 
-  // Xử lý click vào dropdown
+  // Handle dropdown click
   const handleDepartureClick = () => {
     setIsDepartureDropdownOpen(!isDepartureDropdownOpen);
     setIsArrivalDropdownOpen(false);
@@ -38,7 +38,7 @@ const FlightBookingForm = () => {
     setIsDepartureDropdownOpen(false);
   };
 
-  // Chọn địa điểm khởi hành và đến
+  // Select departure and arrival locations
   const handleDepartureSelect = (location) => {
     setSelectedDeparture(location);
     setIsDepartureDropdownOpen(false);
@@ -89,27 +89,27 @@ const FlightBookingForm = () => {
             <IoAirplaneSharp size={25} />
             <input
               type="text"
-              value={
-                selectedDeparture ? selectedDeparture.departureLocationName : ""
-              }
+              value={selectedDeparture ? selectedDeparture.location : ""}
               placeholder="Điểm khởi hành"
               className="w-full ml-4 outline-none bg-transparent"
               readOnly
             />
           </div>
-          {isDepartureDropdownOpen && Array.isArray(departureLocations) && (
+          {isDepartureDropdownOpen && Array.isArray(flights) && (
             <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
-              {departureLocations.map((location, index) => (
-                <div
-                  key={index}
-                  className="p-4 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleDepartureSelect(location)}
-                >
-                  <div className="font-semibold">
-                    {location.departureLocationName}
+              {flights
+                .filter(
+                  (flight) => flight.location !== selectedArrival?.location
+                )
+                .map((flight, index) => (
+                  <div
+                    key={index}
+                    className="p-4 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleDepartureSelect(flight)}
+                  >
+                    <div className="font-semibold">{flight.location}</div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
@@ -129,50 +129,46 @@ const FlightBookingForm = () => {
         </div>
       </div>
 
-      {/* Arrival Airport and Return Date Inputs */}
-      {isRoundTrip && (
-        <div className="flex gap-4 mb-4">
-          {/* Arrival Airport Input */}
-          <div className="relative flex-1">
-            <div
-              className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
-              onClick={handleArrivalClick}
-            >
-              <IoAirplaneSharp
-                size={25}
-                style={{ transform: "rotate(-180deg)" }}
-              />
-              <input
-                type="text"
-                value={
-                  selectedArrival ? selectedArrival.arrivalLocationName : ""
-                }
-                placeholder="Điểm đến"
-                className="w-full ml-4 outline-none bg-transparent"
-                readOnly
-              />
-            </div>
-            {isArrivalDropdownOpen && Array.isArray(departureLocations) && (
-              <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
-                {departureLocations.map((location, index) => (
+      {/* Arrival Airport Input */}
+      <div className="flex gap-4 mb-4">
+        <div className="relative flex-1">
+          <div
+            className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
+            onClick={handleArrivalClick}
+          >
+            <IoAirplaneSharp
+              size={25}
+              style={{ transform: "rotate(-180deg)" }}
+            />
+            <input
+              type="text"
+              value={selectedArrival ? selectedArrival.location : ""}
+              placeholder="Điểm đến"
+              className="w-full ml-4 outline-none bg-transparent"
+              readOnly
+            />
+          </div>
+          {isArrivalDropdownOpen && Array.isArray(flights) && (
+            <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
+              {flights
+                .filter(
+                  (flight) => flight.location !== selectedDeparture?.location
+                )
+                .map((flight, index) => (
                   <div
                     key={index}
                     className="p-4 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleArrivalSelect(location)}
+                    onClick={() => handleArrivalSelect(flight)}
                   >
-                    <div className="font-semibold">
-                      {location.arrivalLocationName}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {location.flightNumber}
-                    </div>
+                    <div className="font-semibold">{flight.location}</div>
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          {/* Return Date Input */}
+        {/* Return Date Input (Only if Round Trip) */}
+        {isRoundTrip && (
           <div className="relative flex-1">
             <div className="w-full flex items-center border-2 border-black rounded-2xl p-4">
               <label className="mr-4">Ngày về</label>
@@ -185,8 +181,8 @@ const FlightBookingForm = () => {
               />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Passenger Control */}
       <PassengerControl
