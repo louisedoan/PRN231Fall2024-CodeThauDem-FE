@@ -14,6 +14,7 @@ import {
     clearCurrentUser,
     setCurrentUser,
   } from "../../../lib/redux/reducers/userSlice";
+  import { FaPlane } from "react-icons/fa6";
 
 const UserMenu = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +40,10 @@ const UserMenu = ({ currentUser }) => {
     toast.success("Logout Successful !");
     navigate("/");
   }, [dispatch, navigate]);
+
+  const handleFlightRoute = useCallback(() => {
+    navigate("/flight-route")
+  }, [navigate])
 
   
 
@@ -87,6 +92,11 @@ const UserMenu = ({ currentUser }) => {
                     onClick={() => {}}
                     label="Manage All Users"
                     icon={<MdManageAccounts size={20} />}
+                  />
+                  <MenuItem
+                    onClick={handleFlightRoute}
+                    label="Flight Route"
+                    icon={<FaPlane size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
