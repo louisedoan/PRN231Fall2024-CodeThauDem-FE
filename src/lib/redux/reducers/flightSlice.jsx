@@ -12,16 +12,23 @@ export const fetchFlights = createAsyncThunk(
     return response.data;
   }
 );
+const initialState = {
+  flightList: [],
+  loading: false,
+  error: null,
+  selectedFlightDetails: null,
+};
 
 // Tạo slice
 const flightSlice = createSlice({
   name: "flights",
-  initialState: {
-    flightList: [],
-    loading: false,
-    error: null,
+  initialState,
+  reducers: {
+    setSelectedFlightDetails: (state, action) => {
+      state.selectedFlightDetails = action.payload;
+    },
   },
-  reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchFlights.pending, (state) => {
@@ -38,5 +45,5 @@ const flightSlice = createSlice({
       });
   },
 });
-
+export const { setSelectedFlightDetails } = flightSlice.actions;
 export default flightSlice.reducer;
