@@ -26,6 +26,7 @@ const flightSlice = createSlice({
   reducers: {
     setSelectedFlightDetails: (state, action) => {
       state.selectedFlightDetails = action.payload;
+      console.log(state.selectedFlightDetails);
     },
   },
 

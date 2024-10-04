@@ -19,6 +19,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
 import { useEffect } from "react";
 
+import FlightChoose from "./pages/FlightChoose";
+import FlightBookingForm from "./pages/FlightBookingForm";
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,6 +48,15 @@ function App() {
           <Route path="/flight-route" element={<FlightRoutePage />} />
         </Routes>
       </BackgroundBeamsWithCollision>
+          <BackgroundBeamsWithCollision>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="flight-route" element={<FlightRoutePage />} />
+              <Route path="flight-choose" element={<FlightChoose />} />
+              <Route path="flight-booking" element={<FlightBookingForm />} />
+            </Routes>
+
+          </BackgroundBeamsWithCollision>
 
       {location.pathname !== "/" && currentUser?.Role !== "Admin" && <Footer />}
     </>
