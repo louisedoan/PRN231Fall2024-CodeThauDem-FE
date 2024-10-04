@@ -8,18 +8,18 @@ import { CgProfile } from "react-icons/cg";
 import { FaHistory } from "react-icons/fa";
 import { HiOutlineLogin } from "react-icons/hi";
 import toast from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { MdDashboard, MdManageAccounts } from "react-icons/md";
 import {
-    clearCurrentUser,
-    setCurrentUser,
-  } from "../../../lib/redux/reducers/userSlice";
-  import { FaPlane } from "react-icons/fa6";
+  clearCurrentUser,
+  setCurrentUser,
+} from "../../../lib/redux/reducers/userSlice";
+import { FaPlane } from "react-icons/fa6";
 
 const UserMenu = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const ToggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -42,10 +42,8 @@ const UserMenu = ({ currentUser }) => {
   }, [dispatch, navigate]);
 
   const handleFlightRoute = useCallback(() => {
-    navigate("/flight-route")
-  }, [navigate])
-
-  
+    navigate("/flight-route");
+  }, [navigate]);
 
   return (
     <div className="relative">
@@ -112,7 +110,7 @@ const UserMenu = ({ currentUser }) => {
               ) : (
                 <>
                   <MenuItem
-                    onClick={() => {}}
+                    onClick={() => navigate(`/profile/${currentUser.ID}`)} // Điều hướng tới trang Profile với userId
                     label="My profile"
                     icon={<CgProfile size={20} />}
                   />

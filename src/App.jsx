@@ -19,7 +19,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
 import FlightChoose from "./pages/FlightChoose";
 import FlightBookingForm from "./components/ui/modal/FlightBookingForm";
-
+import Profile from "./pages/Profile";
 
 function App() {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ function App() {
 
       <BackgroundBeamsWithCollision>
         <Routes>
-        <Route
+          <Route
             path="/"
             element={
               currentUser && currentUser.Role === "Admin" ? (
@@ -48,6 +48,7 @@ function App() {
           <Route path="/flight-route" element={<FlightRoutePage />} />
           <Route path="flight-choose" element={<FlightChoose />} />
           <Route path="flight-booking" element={<FlightBookingForm />} />
+          <Route path="/profile/:userId" element={<Profile />} />
         </Routes>
       </BackgroundBeamsWithCollision>
 
