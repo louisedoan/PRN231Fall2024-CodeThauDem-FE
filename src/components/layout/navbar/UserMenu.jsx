@@ -8,17 +8,18 @@ import { CgProfile } from "react-icons/cg";
 import { FaHistory } from "react-icons/fa";
 import { HiOutlineLogin } from "react-icons/hi";
 import toast from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { MdDashboard, MdManageAccounts } from "react-icons/md";
 import {
-    clearCurrentUser,
-    setCurrentUser,
-  } from "../../../lib/redux/reducers/userSlice";
+  clearCurrentUser,
+  setCurrentUser,
+} from "../../../lib/redux/reducers/userSlice";
+import { FaPlane } from "react-icons/fa6";
 
 const UserMenu = ({ currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const ToggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
@@ -40,7 +41,12 @@ const UserMenu = ({ currentUser }) => {
     navigate("/");
   }, [dispatch, navigate]);
 
-  
+  const handleFlightRoute = useCallback(() => {
+    console.log("Navigating to flight-route"); // Add this log to verify the function is triggered
+    console.log("Navigate function:", navigate); // Log the navigate function to ensure it's available
+    console.log("Current Role:", currentUser.Role); // Check the current role
+    navigate("/flight-route");
+  }, [navigate]);
 
   return (
     <div className="relative">
@@ -89,10 +95,16 @@ const UserMenu = ({ currentUser }) => {
                     icon={<MdManageAccounts size={20} />}
                   />
                   <MenuItem
+                    onClick={handleFlightRoute}
+                    label="Flight Route"
+                    icon={<FaPlane size={20} />}
+                  />
+                  <MenuItem
                     onClick={() => {}}
                     label="Notifications"
                     icon={<IoMdNotifications size={20} />}
                   />
+
                   <MenuItem
                     onClick={handleLogout}
                     label="Log out"
