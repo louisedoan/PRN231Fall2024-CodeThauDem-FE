@@ -25,6 +25,8 @@ const UserMenu = ({ currentUser }) => {
     setIsOpen((value) => !value);
   }, []);
 
+  const closeMenu = () => setIsOpen(false);
+
   useEffect(() => {
     // Check if user is stored in sessionStorage and set it in Redux
     const user = sessionStorage.getItem("user");
@@ -83,26 +85,31 @@ const UserMenu = ({ currentUser }) => {
                 <>
                   <MenuItem
                     onClick={() => {}}
+                    closeMenu={closeMenu}
                     label="Dashboard"
                     icon={<MdDashboard size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
+                    closeMenu={closeMenu}
                     label="Manage All Users"
                     icon={<MdManageAccounts size={20} />}
                   />
                   <MenuItem
                     onClick={handleFlightRoute}
+                    closeMenu={closeMenu}
                     label="Flight Route"
                     icon={<FaPlane size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
+                    closeMenu={closeMenu}
                     label="Notifications"
                     icon={<IoMdNotifications size={20} />}
                   />
                   <MenuItem
                     onClick={handleLogout}
+                    closeMenu={closeMenu}
                     label="Log out"
                     icon={<HiOutlineLogin size={20} />}
                   />
@@ -111,26 +118,31 @@ const UserMenu = ({ currentUser }) => {
                 <>
                   <MenuItem
                     onClick={() => navigate(`/profile/${currentUser.ID}`)} // Điều hướng tới trang Profile với userId
+                    closeMenu={closeMenu}
                     label="My profile"
                     icon={<CgProfile size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
+                    closeMenu={closeMenu}
                     label="My history"
                     icon={<FaHistory size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
+                    closeMenu={closeMenu}
                     label="Notifications"
                     icon={<IoMdNotifications size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
+                    closeMenu={closeMenu}
                     label="Settings"
                     icon={<IoIosSettings size={20} />}
                   />
                   <MenuItem
                     onClick={handleLogout}
+                    closeMenu={closeMenu}
                     label="Log out"
                     icon={<HiOutlineLogin size={20} />}
                   />
