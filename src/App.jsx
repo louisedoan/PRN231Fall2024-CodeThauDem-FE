@@ -19,6 +19,7 @@ import AdminPage from "./pages/AdminPage";
 import FlightChoose from "./pages/FlightChoose";
 import FlightBookingForm from "./components/ui/modal/FlightBookingForm";
 import Profile from "./pages/Profile";
+import FlightSeat from "./pages/FlightSeat";
 
 function App() {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ function App() {
           <Route path="/flight-route" element={<FlightRoutePage />} />
           <Route path="flight-choose" element={<FlightChoose />} />
           <Route path="flight-booking" element={<FlightBookingForm />} />
+          <Route path="flight-seat" element={<FlightSeat />} />
           <Route path="/profile/:userId" element={<Profile />} />
         </Routes>
       </BackgroundBeamsWithCollision>
