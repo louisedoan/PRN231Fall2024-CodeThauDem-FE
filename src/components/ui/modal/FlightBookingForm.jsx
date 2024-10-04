@@ -95,6 +95,7 @@ const FlightBookingForm = () => {
 
       {/* Departure and Arrival Inputs */}
       <div className="flex gap-4 mb-4">
+        {/* Departure Airport Input */}
         <div className="relative flex-1">
           <div
             className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
@@ -124,6 +125,7 @@ const FlightBookingForm = () => {
           )}
         </div>
 
+        {/* Departure Date Input */}
         <div className="relative flex-1">
           <div className="w-full flex items-center border-2 border-black rounded-2xl p-4">
             <label className="mr-4">Ngày đi</label>
@@ -138,28 +140,32 @@ const FlightBookingForm = () => {
         </div>
       </div>
 
-      {isRoundTrip && (
-        <div className="flex gap-4 mb-4">
-          <div className="relative flex-1">
-            <div
-              className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
-              onClick={handleArrivalClick}
-            >
-              <IoAirplaneSharp
-                size={25}
-                style={{ transform: "rotate(-180deg)" }}
-              />
-              <input
-                type="text"
-                value={selectedArrival ? selectedArrival.location : ""}
-                placeholder="Điểm đến"
-                className="w-full ml-4 outline-none bg-transparent"
-                readOnly
-              />
-            </div>
-            {isArrivalDropdownOpen && Array.isArray(flights) && (
-              <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
-                {flights.map((flight, index) => (
+      {/* Arrival Airport Input */}
+      <div className="flex gap-4 mb-4">
+        <div className="relative flex-1">
+          <div
+            className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
+            onClick={handleArrivalClick}
+          >
+            <IoAirplaneSharp
+              size={25}
+              style={{ transform: "rotate(-180deg)" }}
+            />
+            <input
+              type="text"
+              value={selectedArrival ? selectedArrival.location : ""}
+              placeholder="Điểm đến"
+              className="w-full ml-4 outline-none bg-transparent"
+              readOnly
+            />
+          </div>
+          {isArrivalDropdownOpen && Array.isArray(flights) && (
+            <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
+              {flights
+                .filter(
+                  (flight) => flight.location !== selectedDeparture.location
+                )
+                .map((flight, index) => (
                   <div
                     key={index}
                     className="p-4 hover:bg-gray-100 cursor-pointer"
@@ -168,10 +174,12 @@ const FlightBookingForm = () => {
                     <div className="font-semibold">{flight.location}</div>
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
+        {/* Return Date Input for Round Trip Only */}
+        {isRoundTrip && (
           <div className="relative flex-1">
             <div className="w-full flex items-center border-2 border-black rounded-2xl p-4">
               <label className="mr-4">Ngày về</label>
@@ -184,9 +192,10 @@ const FlightBookingForm = () => {
               />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
+      {/* Passenger Control */}
       <PassengerControl
         adultCount={adultCount}
         setAdultCount={setAdultCount}
