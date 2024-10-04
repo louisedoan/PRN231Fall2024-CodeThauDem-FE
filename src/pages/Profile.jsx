@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchUserData, updateUser } from "../lib/api/User"; // Import các API từ User.jsx
+import { fetchUserData, updateUser } from "../lib/api/User";
 import { useDispatch, useSelector } from "react-redux";
 
 const Profile = () => {
@@ -8,6 +8,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.users.detailUser.data);
   const currentUser = useSelector((state) => state.users.currentUser); // Lấy thông tin người dùng từ Redux
+
   const [profileData, setProfileData] = useState({
     password: "",
     gender: "",
@@ -20,38 +21,67 @@ const Profile = () => {
   const [error, setError] = useState("");
 
   // Lấy thông tin người dùng từ API
-
   useEffect(() => {
     const userId = id || currentUser?.ID;
     if (userId) {
       getUserData(userId);
-      console.log(userId);
     }
   }, [id, currentUser]);
 
+  // Khởi tạo profileData từ user khi dữ liệu đã được tải
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        password: user.password || "", // Hiển thị password nếu API trả về
+        gender: user.gender || "",
+        nationality: user.nationality || "",
+        address: user.address || "",
+        fullname: user.fullname || "",
+        dob: user.dob ? user.dob.substring(0, 10) : "", // Định dạng ngày
+      });
+    }
+  }, [user]);
+
   const getUserData = async (userId) => {
     try {
-      console.log("stop here");
       await dispatch(fetchUserData(userId));
-      // setProfileData({
-      //   password: userId.password,
-      //   gender: userId.gender,
-      //   nationality: userId.nationality,
-      //   address: userId.address,
-      //   fullname: userId.fullname,
-      //   dob: userId.dob,
-      // });
     } catch (err) {
-      console.error("Failed to fetch user data:", error);
       setError(err.message);
     }
   };
 
   // Hàm xử lý cập nhật thông tin người dùng
   const handleUpdate = async () => {
+    const updatedProfileData = {
+      password:
+        profileData.password !== "string" && profileData.password !== ""
+          ? profileData.password
+          : user.password, // Nếu không thay đổi password, giữ nguyên
+      gender:
+        profileData.gender !== "string" && profileData.gender !== ""
+          ? profileData.gender
+          : user.gender, // Nếu không thay đổi gender, giữ nguyên
+      nationality:
+        profileData.nationality !== "string" && profileData.nationality !== ""
+          ? profileData.nationality
+          : user.nationality,
+      address:
+        profileData.address !== "string" && profileData.address !== ""
+          ? profileData.address
+          : user.address,
+      fullname:
+        profileData.fullname !== "string" && profileData.fullname !== ""
+          ? profileData.fullname
+          : user.fullname,
+      dob:
+        profileData.dob !== "string" && profileData.dob !== ""
+          ? profileData.dob
+          : user.dob, // Nếu không thay đổi dob, giữ nguyên
+    };
+
     try {
-      const updatedUser = await updateUser(userId, profileData); // Gọi API để cập nhật
-      setProfileData(updatedUser); // Cập nhật lại dữ liệu trong state
+      console.log("Data to update:", updatedProfileData);
+      await updateUser(currentUser?.ID, updatedProfileData); // Gọi API để cập nhật
       alert("Profile updated successfully!");
     } catch (err) {
       setError(err.message);
@@ -59,6 +89,11 @@ const Profile = () => {
   };
 
   if (error) return <p>{error}</p>;
+
+  // Kiểm tra user trước khi render
+  if (!user) {
+    return <p>Loading...</p>; // Hiển thị "Loading" trong khi dữ liệu đang được tải
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white flex justify-center items-center pt-20 pb-20">
@@ -75,7 +110,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={user.email}
+              value={user.email || ""} // Email chỉ có thể lấy từ user và không thay đổi
               disabled
               className="block w-2/3 p-3 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
             />
@@ -88,7 +123,7 @@ const Profile = () => {
             </label>
             <input
               type="password"
-              value={user.password} // tai sao password lai null?
+              value={profileData.password} // Hiển thị mật khẩu từ profileData
               onChange={(e) =>
                 setProfileData({ ...profileData, password: e.target.value })
               }
@@ -96,18 +131,19 @@ const Profile = () => {
             />
           </div>
 
-          {/* Gender */}
           <div className="flex items-center">
             <label className="block font-semibold text-gray-600 w-1/3">
               Gender
             </label>
             <select
-              value={user.gender}
+              value={profileData.gender !== "string" ? profileData.gender : ""}
               onChange={(e) =>
                 setProfileData({ ...profileData, gender: e.target.value })
               }
               className="block w-2/3 p-3 border border-gray-300 rounded-md"
             >
+              <option value="">Select Gender</option>{" "}
+              {/* Giá trị trống mặc định */}
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
@@ -120,7 +156,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={user.nationality}
+              value={profileData.nationality}
               onChange={(e) =>
                 setProfileData({
                   ...profileData,
@@ -138,7 +174,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={user.address}
+              value={profileData.address}
               onChange={(e) =>
                 setProfileData({ ...profileData, address: e.target.value })
               }
@@ -153,7 +189,7 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={user.fullname}
+              value={profileData.fullname}
               onChange={(e) =>
                 setProfileData({ ...profileData, fullname: e.target.value })
               }
@@ -168,7 +204,7 @@ const Profile = () => {
             </label>
             <input
               type="date"
-              value={user.dob?.substring(0, 10)} // Hiển thị chỉ ngày tháng
+              value={profileData.dob}
               onChange={(e) =>
                 setProfileData({ ...profileData, dob: e.target.value })
               }
