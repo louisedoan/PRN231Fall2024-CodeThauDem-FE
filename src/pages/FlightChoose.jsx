@@ -25,6 +25,111 @@ const FlightChoose = () => {
       
     },
     // Add more flight data as needed
+    {
+      id: 1,
+      airline: "VietJet Air",
+      departure: "TP HCM",
+      arrival: "Hà Nội",
+      departureTime: "05:20",
+      arrivalTime: "07:30",
+      duration: "2h 10m",
+      prices: {
+        skyBoss: "2,990,000 VND",
+        deluxe: "1,490,000 VND",
+        eco: "790,000 VND",
+      },
+      availability: {
+        business: false,
+        skyBoss: true,
+        deluxe: true,
+        eco: true,
+      },
+      
+    },
+    {
+      id: 1,
+      airline: "VietJet Air",
+      departure: "TP HCM",
+      arrival: "Hà Nội",
+      departureTime: "05:20",
+      arrivalTime: "07:30",
+      duration: "2h 10m",
+      prices: {
+        skyBoss: "2,990,000 VND",
+        deluxe: "1,490,000 VND",
+        eco: "790,000 VND",
+      },
+      availability: {
+        business: false,
+        skyBoss: true,
+        deluxe: true,
+        eco: true,
+      },
+      
+    },
+    {
+      id: 1,
+      airline: "VietJet Air",
+      departure: "TP HCM",
+      arrival: "Hà Nội",
+      departureTime: "05:20",
+      arrivalTime: "07:30",
+      duration: "2h 10m",
+      prices: {
+        skyBoss: "2,990,000 VND",
+        deluxe: "1,490,000 VND",
+        eco: "790,000 VND",
+      },
+      availability: {
+        business: false,
+        skyBoss: true,
+        deluxe: true,
+        eco: true,
+      },
+      
+    },
+    {
+      id: 1,
+      airline: "VietJet Air",
+      departure: "TP HCM",
+      arrival: "Hà Nội",
+      departureTime: "05:20",
+      arrivalTime: "07:30",
+      duration: "2h 10m",
+      prices: {
+        skyBoss: "2,990,000 VND",
+        deluxe: "1,490,000 VND",
+        eco: "790,000 VND",
+      },
+      availability: {
+        business: false,
+        skyBoss: true,
+        deluxe: true,
+        eco: true,
+      },
+      
+    },
+    {
+      id: 1,
+      airline: "VietJet Air",
+      departure: "TP HCM",
+      arrival: "Hà Nội",
+      departureTime: "05:20",
+      arrivalTime: "07:30",
+      duration: "2h 10m",
+      prices: {
+        skyBoss: "2,990,000 VND",
+        deluxe: "1,490,000 VND",
+        eco: "790,000 VND",
+      },
+      availability: {
+        business: false,
+        skyBoss: true,
+        deluxe: true,
+        eco: true,
+      },
+      
+    },
    
   ];
 
@@ -33,7 +138,7 @@ const FlightChoose = () => {
   };
 
   return (
-    <div className="container min-h-screen overflow-y-auto px-24">
+    <div className="container h-full overflow-y-auto px-24">
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6">Chọn chuyến bay</h2>
 
       {/* Hàng tiêu đề */}

@@ -67,12 +67,12 @@ export const BackgroundBeamsWithCollision = ({
     (<div
       ref={parentRef}
       className={cn(
-     //   "h-screen z-10 md:h-[40rem] bg-gradient-to-b from-white to-neutral-100 relative flex items-center w-full justify-center overflow-hidden",
+        "h-screen z-10 md:h-[40rem] bg-gradient-to-b from-white to-neutral-100 relative flex items-center w-full justify-center overflow-hidden",
        
      
      // h-screen if you want bigger
 
-     "min-h-screen z-10 md:h-auto bg-gradient-to-b from-white to-neutral-100 relative flex items-center w-full justify-center", // Loại bỏ overflow-y-auto ở đây nếu có
+    // "min-h-screen z-10 md:h-auto bg-gradient-to-b from-white to-neutral-100 relative flex items-center w-full justify-center", // Loại bỏ overflow-y-auto ở đây nếu có
         className
       )}>
       {beams.map((beam) => (

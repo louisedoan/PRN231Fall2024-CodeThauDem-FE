@@ -4,7 +4,7 @@ const FlightBookingForm = () => {
   const [gender, setGender] = useState("");
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white rounded-lg shadow-md">
+    <div className="h-full p-6  mx-auto bg-white rounded-lg shadow-md overflow-y-auto">
       <h2 className="text-xl font-bold mb-4">Người lớn</h2>
 
       {/* Gender Selection */}
