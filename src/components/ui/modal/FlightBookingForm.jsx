@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IoAirplaneSharp } from "react-icons/io5";
-import { fetchFlights } from "../../../lib/redux/reducers/flightSlice";
+import {
+  fetchFlights,
+  setSelectedFlightDetails,
+} from "../../../lib/redux/reducers/flightSlice";
 import Button from "../Button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import PassengerControl from "./PassengerControl"; // Import PassengerControl
+import PassengerControl from "./PassengerControl";
 
 const FlightBookingForm = () => {
   const [isRoundTrip, setIsRoundTrip] = useState(true);
@@ -20,14 +23,12 @@ const FlightBookingForm = () => {
   const [infantCount, setInfantCount] = useState(0);
 
   const dispatch = useDispatch();
-  const departureLocations = useSelector((state) => state.flights.flightList);
+  const flights = useSelector((state) => state.flights.flightList?.data || []);
 
-  // Lấy danh sách chuyến bay từ API
   useEffect(() => {
     dispatch(fetchFlights());
   }, [dispatch]);
 
-  // Xử lý click vào dropdown
   const handleDepartureClick = () => {
     setIsDepartureDropdownOpen(!isDepartureDropdownOpen);
     setIsArrivalDropdownOpen(false);
@@ -38,7 +39,6 @@ const FlightBookingForm = () => {
     setIsDepartureDropdownOpen(false);
   };
 
-  // Chọn địa điểm khởi hành và đến
   const handleDepartureSelect = (location) => {
     setSelectedDeparture(location);
     setIsDepartureDropdownOpen(false);
@@ -47,6 +47,21 @@ const FlightBookingForm = () => {
   const handleArrivalSelect = (location) => {
     setSelectedArrival(location);
     setIsArrivalDropdownOpen(false);
+  };
+
+  const handleFindFlight = () => {
+    const selectedFlightDetails = {
+      isRoundTrip,
+      departureLocation: selectedDeparture,
+      arrivalLocation: selectedArrival,
+      departureDate,
+      returnDate: isRoundTrip ? returnDate : null,
+      adultCount,
+      childCount,
+      infantCount,
+    };
+
+    dispatch(setSelectedFlightDetails(selectedFlightDetails));
   };
 
   return (
@@ -80,7 +95,6 @@ const FlightBookingForm = () => {
 
       {/* Departure and Arrival Inputs */}
       <div className="flex gap-4 mb-4">
-        {/* Departure Airport Input */}
         <div className="relative flex-1">
           <div
             className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
@@ -89,32 +103,27 @@ const FlightBookingForm = () => {
             <IoAirplaneSharp size={25} />
             <input
               type="text"
-              value={
-                selectedDeparture ? selectedDeparture.departureLocationName : ""
-              }
+              value={selectedDeparture ? selectedDeparture.location : ""}
               placeholder="Điểm khởi hành"
               className="w-full ml-4 outline-none bg-transparent"
               readOnly
             />
           </div>
-          {isDepartureDropdownOpen && Array.isArray(departureLocations) && (
+          {isDepartureDropdownOpen && Array.isArray(flights) && (
             <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
-              {departureLocations.map((location, index) => (
+              {flights.map((flight, index) => (
                 <div
                   key={index}
                   className="p-4 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleDepartureSelect(location)}
+                  onClick={() => handleDepartureSelect(flight)}
                 >
-                  <div className="font-semibold">
-                    {location.departureLocationName}
-                  </div>
+                  <div className="font-semibold">{flight.location}</div>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Departure Date Input */}
         <div className="relative flex-1">
           <div className="w-full flex items-center border-2 border-black rounded-2xl p-4">
             <label className="mr-4">Ngày đi</label>
@@ -129,10 +138,8 @@ const FlightBookingForm = () => {
         </div>
       </div>
 
-      {/* Arrival Airport and Return Date Inputs */}
       {isRoundTrip && (
         <div className="flex gap-4 mb-4">
-          {/* Arrival Airport Input */}
           <div className="relative flex-1">
             <div
               className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
@@ -144,35 +151,27 @@ const FlightBookingForm = () => {
               />
               <input
                 type="text"
-                value={
-                  selectedArrival ? selectedArrival.arrivalLocationName : ""
-                }
+                value={selectedArrival ? selectedArrival.location : ""}
                 placeholder="Điểm đến"
                 className="w-full ml-4 outline-none bg-transparent"
                 readOnly
               />
             </div>
-            {isArrivalDropdownOpen && Array.isArray(departureLocations) && (
+            {isArrivalDropdownOpen && Array.isArray(flights) && (
               <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl max-h-60 overflow-y-auto z-20">
-                {departureLocations.map((location, index) => (
+                {flights.map((flight, index) => (
                   <div
                     key={index}
                     className="p-4 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleArrivalSelect(location)}
+                    onClick={() => handleArrivalSelect(flight)}
                   >
-                    <div className="font-semibold">
-                      {location.arrivalLocationName}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {location.flightNumber}
-                    </div>
+                    <div className="font-semibold">{flight.location}</div>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Return Date Input */}
           <div className="relative flex-1">
             <div className="w-full flex items-center border-2 border-black rounded-2xl p-4">
               <label className="mr-4">Ngày về</label>
@@ -188,7 +187,6 @@ const FlightBookingForm = () => {
         </div>
       )}
 
-      {/* Passenger Control */}
       <PassengerControl
         adultCount={adultCount}
         setAdultCount={setAdultCount}
@@ -202,6 +200,7 @@ const FlightBookingForm = () => {
       <Button
         label="Tìm chuyến bay"
         containerStyles="w-full bg-yellow-500 text-black font-semibold p-4 rounded-2xl hover:bg-yellow-600 transition"
+        onClick={handleFindFlight}
       />
     </div>
   );
