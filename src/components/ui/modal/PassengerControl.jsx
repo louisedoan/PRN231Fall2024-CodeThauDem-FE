@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaUser } from "react-icons/fa";
 
 const PassengerControl = ({
@@ -10,6 +10,7 @@ const PassengerControl = ({
   setInfantCount,
 }) => {
   const [isPassengerDropdownOpen, setIsPassengerDropdownOpen] = useState(false);
+  const passengerDropdownRef = useRef(null);
 
   // Tăng/giảm số lượng hành khách
   const handleIncrement = (type) => {
@@ -49,8 +50,25 @@ const PassengerControl = ({
     setIsPassengerDropdownOpen(!isPassengerDropdownOpen);
   };
 
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        passengerDropdownRef.current &&
+        !passengerDropdownRef.current.contains(event.target)
+      ) {
+        setIsPassengerDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative w-full mb-4">
+    <div className="relative w-full mb-4" ref={passengerDropdownRef}>
       <div
         className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
         onClick={togglePassengerDropdown}
