@@ -17,7 +17,7 @@ import FlightRoutePage from "./pages/FlightRoutePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
 import FlightChoose from "./pages/FlightChoose";
-import FlightBookingForm from "./components/ui/modal/FlightBookingForm";
+import UserInformation from "./pages/UserInformation";
 import Profile from "./pages/Profile";
 import FlightSeat from "./pages/FlightSeat";
 
@@ -47,7 +47,7 @@ function App() {
           />
           <Route path="/flight-route" element={<FlightRoutePage />} />
           <Route path="flight-choose" element={<FlightChoose />} />
-          <Route path="flight-booking" element={<FlightBookingForm />} />
+          <Route path="user-information" element={<UserInformation />} />
           <Route path="flight-seat" element={<FlightSeat />} />
           <Route path="/profile/:userId" element={<Profile />} />
         </Routes>

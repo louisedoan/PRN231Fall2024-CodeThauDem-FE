@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const FlightBookingForm = () => {
+const UserInformation = () => {
   const [gender, setGender] = useState("");
 
   return (
@@ -122,4 +122,4 @@ const FlightBookingForm = () => {
   );
 };
 
-export default FlightBookingForm;
+export default UserInformation;
