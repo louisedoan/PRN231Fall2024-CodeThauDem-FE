@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchUserData, updateUser } from "../lib/api/User";
 import { useDispatch, useSelector } from "react-redux";
+import { setDetailUser } from "../lib/redux/reducers/userSlice";
 
 const Profile = () => {
-  const { id } = useParams(); // Lấy userId từ URL
+  const { id } = useParams(); // Lấy userId từ URL (nếu cần)
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.users.detailUser.data);
-  const currentUser = useSelector((state) => state.users.currentUser); // Lấy thông tin người dùng từ Redux
+  const user = useSelector((state) => state.users.detailUser.data); // Lấy dữ liệu người dùng từ Redux
+  const currentUser = useSelector((state) => state.users.currentUser); // Lấy thông tin người dùng hiện tại
 
   const [profileData, setProfileData] = useState({
     password: "",
@@ -16,14 +17,14 @@ const Profile = () => {
     address: "",
     fullname: "",
     dob: "",
-    membershipId: "", // Thêm membershipId vào state
+    membershipId: "",
   });
 
   const [error, setError] = useState("");
 
   // Lấy thông tin người dùng từ API
   useEffect(() => {
-    const userId = id || currentUser?.ID;
+    const userId = id || currentUser?.ID; // Lấy userId từ URL hoặc từ Redux
     if (userId) {
       getUserData(userId);
     }
@@ -39,7 +40,7 @@ const Profile = () => {
         address: user.address || "",
         fullname: user.fullname || "",
         dob: user.dob ? user.dob.substring(0, 10) : "",
-        membershipId: user.membershipId || "", // Lấy membershipId từ user
+        membershipId: user.membershipId || "",
       });
     }
   }, [user]);
@@ -55,6 +56,8 @@ const Profile = () => {
   // Hàm xử lý cập nhật thông tin người dùng
   const handleUpdate = async () => {
     const updatedProfileData = {
+      userId: user.userId,
+      email: user.email,
       password:
         profileData.password !== "string" && profileData.password !== ""
           ? profileData.password
@@ -82,23 +85,33 @@ const Profile = () => {
       membershipId:
         profileData.membershipId !== "string" && profileData.membershipId !== ""
           ? profileData.membershipId
-          : user.membershipId, // Thêm membershipId vào dữ liệu cập nhật
+          : user.membershipId,
+      status: user.status,
+      role: user.role,
     };
 
     try {
       console.log("Data to update:", updatedProfileData);
-      await updateUser(currentUser?.ID, updatedProfileData); // Gọi API để cập nhật
+      const updatedUser = await updateUser(updatedProfileData); // Gọi API để cập nhật
+      console.log("Updated User:", updatedUser);
+
+      // Kiểm tra nếu dữ liệu trả về có hợp lệ không
+      if (!updatedUser || !updatedUser.data) {
+        throw new Error("Invalid data received from API");
+      }
+
+      // Hiển thị thông báo thành công
       alert("Profile updated successfully!");
+
+      // Tải lại thông tin người dùng sau khi cập nhật thành công
+      const userId = updatedUser.data.userId || currentUser?.ID; // Sử dụng userId từ phản hồi API hoặc từ Redux
+      if (userId) {
+        await getUserData(userId); // Gọi lại API để lấy thông tin người dùng mới nhất
+      }
     } catch (err) {
       setError(err.message);
     }
   };
-
-  if (error) return <p>{error}</p>;
-
-  if (!user) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white flex justify-center items-center pt-20 pb-20">
@@ -136,6 +149,7 @@ const Profile = () => {
             />
           </div>
 
+          {/* Gender */}
           <div className="flex items-center">
             <label className="block font-semibold text-gray-600 w-1/3">
               Gender

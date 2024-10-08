@@ -19,13 +19,18 @@ export const fetchUserData = createAsyncThunk(
 );
 
 // API cập nhật thông tin người dùng
-export const updateUser = async (userId, updatedUserData) => {
+export const updateUser = async (updatedUserData) => {
   try {
     const response = await axiosClient.put(
       "/api/v1/users/update",
-      updatedUserData
+      updatedUserData,
+      {
+        headers: {
+          "Content-Type": "application/json", // Đảm bảo gửi với định dạng JSON
+        },
+      }
     );
-    return response.data; // Trả về dữ liệu đã được cập nhật
+    return response.data;
   } catch (error) {
     throw new Error("Failed to update user data");
   }
