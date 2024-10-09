@@ -90,7 +90,7 @@ const UserMenu = ({ currentUser }) => {
                     icon={<MdDashboard size={20} />}
                   />
                   <MenuItem
-                    onClick={() => {}}
+                    onClick={() => navigate("/manage-users")}
                     closeMenu={closeMenu}
                     label="Manage All Users"
                     icon={<MdManageAccounts size={20} />}
