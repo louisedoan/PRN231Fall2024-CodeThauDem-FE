@@ -235,9 +235,7 @@ const Profile = () => {
             <input
               type="text"
               value={profileData.membershipId} // Hiển thị membershipId từ profileData
-              onChange={(e) =>
-                setProfileData({ ...profileData, membershipId: e.target.value })
-              }
+              disabled
               className="block w-2/3 p-3 border border-gray-300 rounded-md"
             />
           </div>

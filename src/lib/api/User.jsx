@@ -3,6 +3,21 @@ import { useDispatch } from "react-redux";
 import { setDetailUser } from "../redux/reducers/userSlice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+// API lấy danh sách tất cả người dùng
+export const fetchAllUsers = createAsyncThunk(
+  "users/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosClient.get("/api/v1/users/all");
+      console.log("Users fetched:", response.data.data); // Kiểm tra dữ liệu trả về
+      return response.data.data; // Trả về đúng mảng data từ response
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return rejectWithValue("Error fetching users");
+    }
+  }
+);
+
 // API lấy thông tin người dùng
 export const fetchUserData = createAsyncThunk(
   "users/fetchByIdStatus",
