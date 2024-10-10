@@ -50,3 +50,22 @@ export const updateUser = async (updatedUserData) => {
     throw new Error("Failed to update user data");
   }
 };
+
+// API tạo mới một Manager
+export const createManager = async (newManagerData) => {
+  try {
+    const response = await axiosClient.post(
+      "/api/v1/users/create",
+      newManagerData,
+      {
+        headers: {
+          "Content-Type": "application/json", // Đảm bảo gửi với định dạng JSON
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating manager:", error);
+    throw new Error("Failed to create manager");
+  }
+};
