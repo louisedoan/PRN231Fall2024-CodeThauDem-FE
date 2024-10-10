@@ -1,140 +1,10 @@
 import Container from "../components/ui/Container";
-import React from "react";
+import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { axiosClient } from "../lib/api/config/axios-client";
+import { searchOneWayFlight } from "../lib/api/Flight";
+
 const FlightChoose = () => {
-  // const flights = [
-  //   {
-  //     id: 1,
-  //     airline: "VietJet Air",
-  //     departure: "TP HCM",
-  //     arrival: "Hà Nội",
-  //     departureTime: "05:20",
-  //     arrivalTime: "07:30",
-  //     duration: "2h 10m",
-  //     prices: {
-  //       skyBoss: "2,990,000 VND",
-  //       deluxe: "1,490,000 VND",
-  //       eco: "790,000 VND",
-  //     },
-  //     availability: {
-  //       business: false,
-  //       skyBoss: true,
-  //       deluxe: true,
-  //       eco: true,
-  //     },
-      
-  //   },
-  //   // Add more flight data as needed
-  //   {
-  //     id: 1,
-  //     airline: "VietJet Air",
-  //     departure: "TP HCM",
-  //     arrival: "Hà Nội",
-  //     departureTime: "05:20",
-  //     arrivalTime: "07:30",
-  //     duration: "2h 10m",
-  //     prices: {
-  //       skyBoss: "2,990,000 VND",
-  //       deluxe: "1,490,000 VND",
-  //       eco: "790,000 VND",
-  //     },
-  //     availability: {
-  //       business: false,
-  //       skyBoss: true,
-  //       deluxe: true,
-  //       eco: true,
-  //     },
-      
-  //   },
-  //   {
-  //     id: 1,
-  //     airline: "VietJet Air",
-  //     departure: "TP HCM",
-  //     arrival: "Hà Nội",
-  //     departureTime: "05:20",
-  //     arrivalTime: "07:30",
-  //     duration: "2h 10m",
-  //     prices: {
-  //       skyBoss: "2,990,000 VND",
-  //       deluxe: "1,490,000 VND",
-  //       eco: "790,000 VND",
-  //     },
-  //     availability: {
-  //       business: false,
-  //       skyBoss: true,
-  //       deluxe: true,
-  //       eco: true,
-  //     },
-      
-  //   },
-  //   {
-  //     id: 1,
-  //     airline: "VietJet Air",
-  //     departure: "TP HCM",
-  //     arrival: "Hà Nội",
-  //     departureTime: "05:20",
-  //     arrivalTime: "07:30",
-  //     duration: "2h 10m",
-  //     prices: {
-  //       skyBoss: "2,990,000 VND",
-  //       deluxe: "1,490,000 VND",
-  //       eco: "790,000 VND",
-  //     },
-  //     availability: {
-  //       business: false,
-  //       skyBoss: true,
-  //       deluxe: true,
-  //       eco: true,
-  //     },
-      
-  //   },
-  //   {
-  //     id: 1,
-  //     airline: "VietJet Air",
-  //     departure: "TP HCM",
-  //     arrival: "Hà Nội",
-  //     departureTime: "05:20",
-  //     arrivalTime: "07:30",
-  //     duration: "2h 10m",
-  //     prices: {
-  //       skyBoss: "2,990,000 VND",
-  //       deluxe: "1,490,000 VND",
-  //       eco: "790,000 VND",
-  //     },
-  //     availability: {
-  //       business: false,
-  //       skyBoss: true,
-  //       deluxe: true,
-  //       eco: true,
-  //     },
-      
-  //   },
-  //   {
-  //     id: 1,
-  //     airline: "VietJet Air",
-  //     departure: "TP HCM",
-  //     arrival: "Hà Nội",
-  //     departureTime: "05:20",
-  //     arrivalTime: "07:30",
-  //     duration: "2h 10m",
-  //     prices: {
-  //       skyBoss: "2,990,000 VND",
-  //       deluxe: "1,490,000 VND",
-  //       eco: "790,000 VND",
-  //     },
-  //     availability: {
-  //       business: false,
-  //       skyBoss: true,
-  //       deluxe: true,
-  //       eco: true,
-  //     },
-      
-  //   },
-   
-  // ];
   const navigate = useNavigate();
   const selectedFlightDetails = useSelector(
     (state) => state.flights.selectedFlightDetails
@@ -144,7 +14,6 @@ const FlightChoose = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
   useEffect(() => {
     if (!selectedFlightDetails.departureLocation || !selectedFlightDetails.arrivalLocation) {
       // Nếu không có thông tin chuyến bay, quay lại trang đặt chuyến bay
@@ -155,27 +24,27 @@ const FlightChoose = () => {
     const fetchFlights = async () => {
       try {
         setLoading(true);
-        const params = {
-          departureLocation: selectedFlightDetails.departureLocation.location, // Điều chỉnh theo cấu trúc dữ liệu
-          arrivalLocation: selectedFlightDetails.arrivalLocation.location,
-          departureDate: selectedFlightDetails.departureDate
-            ? selectedFlightDetails.departureDate.toISOString().split("T")[0]
-            : null,
-          returnDate: selectedFlightDetails.isRoundTrip && selectedFlightDetails.returnDate
-            ? selectedFlightDetails.returnDate.toISOString().split("T")[0]
-            : null,
-        };
+        const departureLocation = selectedFlightDetails.departureLocation; 
+        const arrivalLocation = selectedFlightDetails.arrivalLocation;
+        const departureDate = selectedFlightDetails.departureDate
+          ? new Date(selectedFlightDetails.departureDate).toISOString().split("T")[0]
+          : null;
+        const returnDate = selectedFlightDetails.isRoundTrip && selectedFlightDetails.returnDate
+          ? new Date(selectedFlightDetails.returnDate).toISOString().split("T")[0]
+          : null;
+        
+        // Log parameters to debug
+        console.log("Fetching flights with params:", {
+          departureLocation,
+          arrivalLocation,
+          departureDate,
+        });
 
-        // Loại bỏ các tham số null hoặc undefined
-        Object.keys(params).forEach(
-          (key) => params[key] === null && delete params[key]
-        );
-
-        const response = await axiosClient.get("/api/v1/flights/query", { params });
-        setFlights(response.data);
+        const data = await searchOneWayFlight(departureLocation, arrivalLocation, departureDate);
+        setFlights(data);
       } catch (error) {
         console.error("Error fetching flights:", error);
-        setError("Đã có lỗi xảy ra khi lấy dữ liệu chuyến bay.");
+        setError("An error occurred while fetching flight data.");
       } finally {
         setLoading(false);
       }
@@ -185,8 +54,7 @@ const FlightChoose = () => {
   }, [selectedFlightDetails, navigate]);
 
   const handleSelectFlight = (flight, classType) => {
-    alert(`Bạn đã chọn chuyến bay của ${flight.airline}, Hạng: ${classType}`);
-    // Bạn có thể dispatch thêm thông tin chuyến bay đã chọn vào Redux hoặc chuyển hướng đến bước tiếp theo
+    navigate('/flight-seat', { state: { flightId: flight.flightId, classType } });
   };
 
   if (loading) {
@@ -208,51 +76,61 @@ const FlightChoose = () => {
 
         {/* Cột 2/3 chứa nội dung Business và SkyBoss */}
         <div className="col-span-2 grid grid-cols-2 gap-4 text-center font-semibold text-gray-600">
-          <div>Từ:  {selectedFlightDetails.departureLocation.location}  </div>
-          <div>Đến: {selectedFlightDetails.arrivalLocation.location} </div>
+          <div>Từ: {selectedFlightDetails.departureLocation.location}</div>
+          <div>Đến: {selectedFlightDetails.arrivalLocation.location}</div>
         </div>
       </div>
 
       {/* Danh sách các chuyến bay */}
       {flights.map((flight) => (
         <div
-          key={flight.id}
+          key={flight.flightId} // Ensure each child has a unique key
           className="bg-white shadow-lg rounded-xl p-6 mb-6 transition-transform transform hover:scale-105 hover:shadow-2xl"
         >
           <div className="grid grid-cols-3 gap-2">
-            {/* Cột Thông tin thời gian */}
+            {/* Cột thông tin thời gian */}
             <div className="col-span-1 pr-4">
               <div className="mb-4">
-                <h3 className="text-lg font-bold text-blue-600">{flight.airline}</h3>
-                <p className="text-sm text-gray-500">
-                {new Date(flight.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })} 
-                {' '} 
-                - {new Date(flight.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                <h3 className="text-lg font-bold text-blue-600">Flight Number: {flight.flightNumber}</h3>
+                <p className="text-sm text-gray-700">
+                  Plane Code: {flight.planeCode}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {flight.departureLocationName} - {flight.arrivalLocationName}
+                </p>
+                <p className="text-sm text-gray-550">
+                  Departure: {new Date(flight.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })} 
+                  {' '} 
+                  - Arrival: {new Date(flight.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                 </p>
               </div>
             </div>
 
-            {/* Cột Giá tiền các loại ghế */}
+            {/* Cột thông tin giá */}
             <div className="col-span-2 grid grid-cols-2 gap-4 text-center">
               <div className="border p-4 rounded-lg">
                 <p className="font-semibold text-gray-600">Business</p>
-                <p className="text-xl font-bold text-gray-800">{flight.prices}</p>
+                <p className="text-xl font-bold text-gray-800">{flight.businessPrice}</p>
+                <p className="text-sm text-gray-600">Available: {flight.availableBusinessSeats}</p>
                 <button
-                  className="mt-2 w-full bg-gray-300 text-white px-4 py-2 rounded-lg cursor-not-allowed"
-                  disabled
+                  className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  onClick={() => handleSelectFlight(flight, "Business")}
+                  disabled={flight.availableBusinessSeats === 0}
                 >
-                  
+                  Choose
                 </button>
               </div>
 
               <div className="border p-4 rounded-lg">
                 <p className="font-semibold text-gray-600">Economy</p>
-                <p className="text-xl font-bold text-red-500">{flight.prices}</p>
+                <p className="text-xl font-bold text-red-500">{flight.economyPrice}</p>
+                <p className="text-sm text-gray-600">Available: {flight.availableEconomySeats}</p>
                 <button
                   className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                   onClick={() => handleSelectFlight(flight, "Economy")}
+                  disabled={flight.availableEconomySeats === 0}
                 >
-                  Chọn
+                  Choose
                 </button>
               </div>
             </div>

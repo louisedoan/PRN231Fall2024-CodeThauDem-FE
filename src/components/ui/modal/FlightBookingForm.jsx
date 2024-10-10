@@ -115,10 +115,10 @@ const FlightBookingForm = () => {
     setErrors({});
     const selectedFlightDetails = {
       isRoundTrip,
-      departureLocation: selectedDeparture,
-      arrivalLocation: selectedArrival,
-      departureDate,
-      returnDate: isRoundTrip ? returnDate : null,
+      departureLocation: selectedDeparture.flightRouteId,
+      arrivalLocation: selectedArrival.flightRouteId,
+      departureDate: departureDate ? new Date(departureDate.getTime() - (departureDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0] : null,
+      returnDate: isRoundTrip && returnDate ? new Date(returnDate.getTime() - (returnDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0] : null,
       adultCount,
       childCount,
       infantCount,

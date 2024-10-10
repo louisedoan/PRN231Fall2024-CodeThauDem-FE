@@ -3,24 +3,28 @@ import React, { useState } from "react";
 const UserInformation = () => {
   const [gender, setGender] = useState("");
 
+  const handleGenderChange = (value) => {
+    setGender(value);
+  };
+
   return (
-    <div className="h-full p-6  mx-auto bg-white rounded-lg shadow-md overflow-y-auto">
-      <h2 className="text-xl font-bold mb-4">Người lớn</h2>
+    <div className="max-w-md p-6 mx-auto bg-white rounded-lg shadow-md overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-6">Adult</h2>
 
       {/* Gender Selection */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Giới tính*</label>
-        <div className="flex items-center space-x-4">
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold">Gender*</label>
+        <div className="flex items-center space-x-6">
           <label className="flex items-center">
             <input
               type="radio"
               name="gender"
               value="male"
               checked={gender === "male"}
-              onChange={() => setGender("male")}
+              onChange={() => handleGenderChange("male")}
               className="mr-2"
             />
-            Nam
+            Male
           </label>
           <label className="flex items-center">
             <input
@@ -28,37 +32,26 @@ const UserInformation = () => {
               name="gender"
               value="female"
               checked={gender === "female"}
-              onChange={() => setGender("female")}
+              onChange={() => handleGenderChange("female")}
               className="mr-2"
             />
-            Nữ
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="gender"
-              value="other"
-              checked={gender === "other"}
-              onChange={() => setGender("other")}
-              className="mr-2"
-            />
-            Khác
+            Female
           </label>
         </div>
       </div>
 
       {/* Name Fields */}
-      <div className="flex gap-4 mb-4">
+      <div className="flex gap-4 mb-6">
         <div className="w-1/2">
-          <label className="block mb-1 font-semibold">Họ*</label>
+          <label className="block mb-2 font-semibold">Last Name*</label>
           <input
             type="text"
-            placeholder="Theo giấy tờ tùy thân"
+            placeholder="As in ID"
             className="w-full border border-gray-300 p-2 rounded"
           />
         </div>
         <div className="w-1/2">
-          <label className="block mb-1 font-semibold">Tên đệm & tên*</label>
+          <label className="block mb-2 font-semibold">First & Middle Name*</label>
           <input
             type="text"
             className="w-full border border-gray-300 p-2 rounded"
@@ -67,8 +60,8 @@ const UserInformation = () => {
       </div>
 
       {/* Date of Birth */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Ngày sinh (DD/MM/YYYY)*</label>
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold">Date of Birth (DD/MM/YYYY)*</label>
         <input
           type="text"
           placeholder="DD/MM/YYYY"
@@ -77,23 +70,23 @@ const UserInformation = () => {
       </div>
 
       {/* Phone Number */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Số điện thoại*</label>
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold">Phone Number*</label>
         <div className="flex">
           <div className="flex items-center border border-gray-300 p-2 rounded-l">
             <span className="mr-2">🇻🇳 +84</span>
           </div>
           <input
             type="text"
-            placeholder="Số điện thoại"
+            placeholder="Phone Number"
             className="w-full border-t border-b border-r border-gray-300 p-2 rounded-r"
           />
         </div>
       </div>
 
       {/* Email */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Email*</label>
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold">Email*</label>
         <input
           type="email"
           className="w-full border border-gray-300 p-2 rounded"
@@ -101,20 +94,10 @@ const UserInformation = () => {
       </div>
 
       {/* Address */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Nơi ở hiện tại</label>
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold">Current Address</label>
         <input
           type="text"
-          className="w-full border border-gray-300 p-2 rounded"
-        />
-      </div>
-
-      {/* SkyJoy Member */}
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Nhập mã hội viên SkyJoy</label>
-        <input
-          type="text"
-          placeholder="SJxxxxxxxxxx"
           className="w-full border border-gray-300 p-2 rounded"
         />
       </div>
