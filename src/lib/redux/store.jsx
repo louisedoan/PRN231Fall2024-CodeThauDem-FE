@@ -1,18 +1,20 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import usersSlice, { setCurrentUser } from "./reducers/userSlice";
 import flightReducer from "../redux/reducers/flightSlice";
+import bookingSlice from "./reducers/bookingSlice";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; 
 
 const persistConfig = {
   key: "root", 
   storage,
-  whitelist: ["users", "flights"], 
+  whitelist: ["users", "flights", "bookings"], 
 };
 
 const rootReducer = combineReducers({
   users: usersSlice,
   flights: flightReducer,
+  bookings : bookingSlice
 });
 
 

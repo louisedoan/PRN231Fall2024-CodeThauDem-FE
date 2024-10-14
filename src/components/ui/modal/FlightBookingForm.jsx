@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PassengerControl from "./PassengerControl";
 import { useNavigate } from "react-router-dom";
+import { setPassengerBooking } from "../../../lib/redux/reducers/bookingSlice";
 
 const FlightBookingForm = () => {
   const [isRoundTrip, setIsRoundTrip] = useState(true);
@@ -117,14 +118,41 @@ const FlightBookingForm = () => {
       isRoundTrip,
       departureLocation: selectedDeparture.flightRouteId,
       arrivalLocation: selectedArrival.flightRouteId,
-      departureDate: departureDate ? new Date(departureDate.getTime() - (departureDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0] : null,
-      returnDate: isRoundTrip && returnDate ? new Date(returnDate.getTime() - (returnDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0] : null,
+      departureDate: departureDate
+        ? new Date(
+            departureDate.getTime() - departureDate.getTimezoneOffset() * 60000
+          )
+            .toISOString()
+            .split("T")[0]
+        : null,
+      returnDate:
+        isRoundTrip && returnDate
+          ? new Date(
+              returnDate.getTime() - returnDate.getTimezoneOffset() * 60000
+            )
+              .toISOString()
+              .split("T")[0]
+          : null,
       adultCount,
       childCount,
       infantCount,
     };
 
     dispatch(setSelectedFlightDetails(selectedFlightDetails));
+    navigate("/flight-choose");
+
+    
+    // Dispatch the passenger booking details
+    const passengerBooking = {
+      adults: adultCount,
+      children: childCount,
+      infants: infantCount,
+    };
+
+    // Dispatch passenger booking to Redux store
+    dispatch(setPassengerBooking(passengerBooking));
+
+    // Navigate to the next page
     navigate("/flight-choose");
   };
 

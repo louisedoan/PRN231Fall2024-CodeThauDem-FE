@@ -1,11 +1,13 @@
 import Container from "../components/ui/Container";
 import React, { useEffect, useState } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { searchOneWayFlight } from "../lib/api/Flight";
+import { setFlightBooking } from "../lib/redux/reducers/bookingSlice";
 
 const FlightChoose = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const selectedFlightDetails = useSelector(
     (state) => state.flights.selectedFlightDetails
   );
@@ -54,6 +56,17 @@ const FlightChoose = () => {
   }, [selectedFlightDetails, navigate]);
 
   const handleSelectFlight = (flight, classType) => {
+
+    const flightBookingDetails = {
+      flightId: flight.flightId,
+      flightNumber: flight.flightNumber,
+      departureTime: flight.departureTime,
+      arrivalTime: flight.arrivalTime,
+      classType: classType,
+      price: classType === "Business" ? flight.businessPrice : flight.economyPrice
+    };
+
+    dispatch(setFlightBooking(flightBookingDetails));
     navigate('/flight-seat', { state: { flightId: flight.flightId, classType } });
   };
 
