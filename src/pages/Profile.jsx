@@ -17,7 +17,7 @@ const Profile = () => {
     address: "",
     fullname: "",
     dob: "",
-    membershipId: "",
+    rank: "",
   });
 
   const [error, setError] = useState("");
@@ -40,7 +40,7 @@ const Profile = () => {
         address: user.address || "",
         fullname: user.fullname || "",
         dob: user.dob ? user.dob.substring(0, 10) : "",
-        membershipId: user.membershipId || "",
+        rank: user.rank || "",
       });
     }
   }, [user]);
@@ -82,10 +82,7 @@ const Profile = () => {
         profileData.dob !== "string" && profileData.dob !== ""
           ? profileData.dob
           : user.dob,
-      membershipId:
-        profileData.membershipId !== "string" && profileData.membershipId !== ""
-          ? profileData.membershipId
-          : user.membershipId,
+      rank: profileData.rank || user.rank,
       status: user.status,
       role: user.role,
     };
@@ -227,16 +224,16 @@ const Profile = () => {
             />
           </div>
 
-          {/* Membership ID */}
+          {/* Rank */}
           <div className="flex items-center">
             <label className="block font-semibold text-gray-600 w-1/3">
-              Membership ID
+              Rank
             </label>
             <input
               type="text"
-              value={profileData.membershipId} // Hiển thị membershipId từ profileData
+              value={profileData.rank} // Hiển thị rank từ profileData
               disabled
-              className="block w-2/3 p-3 border border-gray-300 rounded-md"
+              className="block w-2/3 p-3 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
             />
           </div>
         </div>

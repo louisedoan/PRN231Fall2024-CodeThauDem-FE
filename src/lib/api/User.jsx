@@ -69,3 +69,13 @@ export const createManager = async (newManagerData) => {
     throw new Error("Failed to create manager");
   }
 };
+
+// API xóa người dùng
+export const deleteUser = async (userId) => {
+  try {
+    const response = await axiosClient.delete(`/api/v1/users/delete/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to delete user with ID ${userId}`);
+  }
+};
