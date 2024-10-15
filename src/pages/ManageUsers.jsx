@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllUsers, createManager } from "../lib/api/User";
+import {
+  fetchAllUsers,
+  createManager,
+  deleteUser,
+  updateUser,
+} from "../lib/api/User";
 import toast from "react-hot-toast"; // Thêm toast để thông báo
 
 const ManageUsers = () => {
@@ -11,16 +16,7 @@ const ManageUsers = () => {
 
   const [expandedRole, setExpandedRole] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái mở modal
-  const [newManagerData, setNewManagerData] = useState({
-    fullname: "",
-    email: "",
-    password: "",
-    nationality: "",
-    address: "",
-    gender: "Female",
-    status: "Active",
-  });
-
+  const [selectedUser, setSelectedUser] = useState(null); // Người dùng được chọn để cập nhật
   const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
   const usersPerPage = 5; // Số lượng người dùng trên mỗi trang
 
@@ -44,22 +40,52 @@ const ManageUsers = () => {
     return date.toLocaleDateString("en-GB");
   };
 
-  const handleCreateManager = async () => {
-    try {
-      const response = await createManager({
-        ...newManagerData,
-        role: "Manager",
-      });
-      toast.success("Create Manager thành công!");
-      setIsModalOpen(false);
-      dispatch(fetchAllUsers());
-    } catch (error) {
-      console.error("Error creating manager:", error);
-      toast.error("Error creating Manager");
+  const handleDelete = async (user) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete user: ${user.fullname}?`
+    );
+    if (confirmed) {
+      try {
+        await deleteUser(user.userId); // Gọi API xóa người dùng
+        toast.success("User deleted successfully!");
+        dispatch(fetchAllUsers()); // Tải lại danh sách người dùng sau khi xóa
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        toast.error("Failed to delete user");
+      }
+    } else {
+      toast("Deletion canceled");
     }
   };
 
-  // Tính toán các trang cho danh sách người dùng
+  // Mở modal và thiết lập người dùng được chọn để cập nhật
+  const handleUpdate = (user) => {
+    setSelectedUser(user); // Thiết lập dữ liệu người dùng vào state
+    setIsModalOpen(true); // Mở modal
+  };
+
+  // Xử lý cập nhật thông tin người dùng
+  const handleUpdateSubmit = async () => {
+    try {
+      await updateUser(selectedUser); // Gọi API cập nhật người dùng
+      toast.success("User updated successfully!");
+      setIsModalOpen(false); // Đóng modal sau khi cập nhật thành công
+      dispatch(fetchAllUsers()); // Tải lại danh sách người dùng
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Failed to update user");
+    }
+  };
+
+  // Cập nhật state khi người dùng thay đổi thông tin trong form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+  };
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = usersList
@@ -73,17 +99,25 @@ const ManageUsers = () => {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prevPage) => prevPage + 1);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-8 pt-24 pb-24">
       <div className="flex justify-center mb-4 space-x-4">
         {roles.map((role) => (
           <button
@@ -110,153 +144,36 @@ const ManageUsers = () => {
               Users in Role: {expandedRole}
             </h3>
 
-            {expandedRole === "Manager" && (
-              <>
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="bg-green-500 text-white py-2 px-4 rounded-lg mb-4"
-                >
-                  Create Manager
-                </button>
-
-                {isModalOpen && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-1/3">
-                      <h4 className="text-md font-semibold mb-2">
-                        Create New Manager
-                      </h4>
-                      <input
-                        type="text"
-                        placeholder="Full Name"
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.fullname}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            fullname: e.target.value,
-                          })
-                        }
-                      />
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.email}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            email: e.target.value,
-                          })
-                        }
-                      />
-                      <input
-                        type="password"
-                        placeholder="Password"
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.password}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            password: e.target.value,
-                          })
-                        }
-                      />
-                      <select
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.gender}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            gender: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="Female">Female</option>
-                        <option value="Male">Male</option>
-                      </select>
-                      <input
-                        type="date"
-                        placeholder="Date of Birth"
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.dob}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            dob: e.target.value,
-                          })
-                        }
-                      />
-                      <input
-                        type="text"
-                        placeholder="Address"
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.address}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            address: e.target.value,
-                          })
-                        }
-                      />
-                      <select
-                        className="border p-2 mb-2 w-full"
-                        value={newManagerData.status}
-                        onChange={(e) =>
-                          setNewManagerData({
-                            ...newManagerData,
-                            status: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                      </select>
-                      <div className="flex justify-end space-x-2">
-                        <button
-                          onClick={handleCreateManager}
-                          className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-                        >
-                          Submit
-                        </button>
-                        <button
-                          onClick={() => setIsModalOpen(false)}
-                          className="bg-gray-500 text-white py-2 px-4 rounded-lg"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            <table className="w-full bg-white">
-              <thead>
-                <tr>
-                  <th className="text-left py-2 px-4">Full Name</th>
-                  <th className="text-left py-2 px-4">Email</th>
-                  <th className="text-left py-2 px-4">Gender</th>
-                  <th className="text-left py-2 px-4">Nationality</th>
-                  <th className="text-left py-2 px-4">Address</th>
-                  <th className="text-left py-2 px-4">Date of Birth</th>
-                  <th className="text-left py-2 px-4">Status</th>
-                  {expandedRole !== "Admin" && (
+            <div className="table-container">
+              <table className="w-full bg-white">
+                <thead>
+                  <tr>
+                    <th className="text-left py-2 px-4">Full Name</th>
+                    <th className="text-left py-2 px-4">Email</th>
+                    <th className="text-left py-2 px-4">Gender</th>
+                    <th className="text-left py-2 px-4">Nationality</th>
+                    <th className="text-left py-2 px-4">Address</th>
+                    <th className="text-left py-2 px-4">Date of Birth</th>
+                    {expandedRole === "Member" && (
+                      <th className="text-left py-2 px-4">Rank</th>
+                    )}
+                    <th className="text-left py-2 px-4">Status</th>
                     <th className="text-left py-2 px-4">Actions</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {currentUsers.map((user) => (
-                  <tr key={user.email} className="hover:bg-gray-100">
-                    <td className="py-2 px-4">{user.fullname}</td>
-                    <td className="py-2 px-4">{user.email}</td>
-                    <td className="py-2 px-4">{user.gender}</td>
-                    <td className="py-2 px-4">{user.nationality}</td>
-                    <td className="py-2 px-4">{user.address}</td>
-                    <td className="py-2 px-4">{formatDob(user.dob)}</td>
-                    <td className="py-2 px-4">{user.status}</td>
-                    {expandedRole !== "Admin" && (
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentUsers.map((user) => (
+                    <tr key={user.email} className="hover:bg-gray-100">
+                      <td className="py-2 px-4">{user.fullname}</td>
+                      <td className="py-2 px-4">{user.email}</td>
+                      <td className="py-2 px-4">{user.gender}</td>
+                      <td className="py-2 px-4">{user.nationality}</td>
+                      <td className="py-2 px-4">{user.address}</td>
+                      <td className="py-2 px-4">{formatDob(user.dob)}</td>
+                      {expandedRole === "Member" && (
+                        <td className="py-2 px-4">{user.rank || "N/A"}</td>
+                      )}
+                      <td className="py-2 px-4">{user.status}</td>
                       <td className="py-2 px-4">
                         <button
                           onClick={() => handleUpdate(user)}
@@ -271,13 +188,12 @@ const ManageUsers = () => {
                           Delete
                         </button>
                       </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-            {/* Pagination */}
             <div className="flex justify-center mt-4">
               <button
                 onClick={handlePrevPage}
@@ -302,6 +218,107 @@ const ManageUsers = () => {
                 Next
               </button>
             </div>
+
+            {/* Modal cập nhật người dùng */}
+            {isModalOpen && selectedUser && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="bg-white p-6 rounded-lg w-1/3">
+                  <h4 className="text-md font-semibold mb-2">
+                    Update User Information
+                  </h4>
+                  <input
+                    type="text"
+                    name="fullname"
+                    placeholder="Full Name"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.fullname}
+                    onChange={handleChange}
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.email}
+                    disabled // Không cho phép thay đổi email
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.password}
+                    onChange={handleChange}
+                  />
+                  <select
+                    name="gender"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.gender}
+                    onChange={handleChange}
+                  >
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                  </select>
+                  <input
+                    type="date"
+                    name="dob"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.dob.substring(0, 10)}
+                    onChange={handleChange}
+                  />
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.address}
+                    onChange={handleChange}
+                  />
+                  <input
+                    type="text"
+                    name="nationality"
+                    placeholder="Nationality"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.nationality}
+                    onChange={handleChange}
+                  />
+                  <select
+                    name="status"
+                    className="border p-2 mb-2 w-full"
+                    value={selectedUser.status}
+                    onChange={handleChange}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+
+                  {expandedRole === "Member" && (
+                    <input
+                      type="text"
+                      name="rank"
+                      placeholder="Rank"
+                      className="border p-2 mb-2 w-full"
+                      value={selectedUser.rank || ""}
+                      onChange={handleChange}
+                    />
+                  )}
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={handleUpdateSubmit}
+                      className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      className="bg-gray-500 text-white py-2 px-4 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
