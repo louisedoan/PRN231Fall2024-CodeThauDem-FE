@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { searchOneWayFlight } from "../lib/api/Flight";
-import { setFlightBooking } from "../lib/redux/reducers/bookingSlice";
+import { setFlight } from "../lib/redux/reducers/bookingSlice";
 
 const FlightChoose = () => {
   const navigate = useNavigate();
@@ -60,18 +60,20 @@ const FlightChoose = () => {
     const flightBookingDetails = {
       flightId: flight.flightId,
       flightNumber: flight.flightNumber,
+      departureLocation: flight.departureLocationName,
       departureTime: flight.departureTime,
+      arrivalLocation: flight.arrivalLocationName,
       arrivalTime: flight.arrivalTime,
       classType: classType,
       price: classType === "Business" ? flight.businessPrice : flight.economyPrice
     };
 
-    dispatch(setFlightBooking(flightBookingDetails));
+    dispatch(setFlight(flightBookingDetails));
     navigate('/flight-seat', { state: { flightId: flight.flightId, classType } });
   };
 
   if (loading) {
-    return <div className="container px-24">Đang tải dữ liệu chuyến bay...</div>;
+    return <div className="container px-24">Loading...</div>;
   }
 
   if (error) {
@@ -87,7 +89,6 @@ const FlightChoose = () => {
         {/* Cột 1 chiếm 1/3 không có nội dung */}
         <div className="col-span-1"></div>
 
-        {/* Cột 2/3 chứa nội dung Business và SkyBoss */}
         <div className="col-span-2 grid grid-cols-2 gap-4 text-center font-semibold text-gray-600">
           <div>Từ: {selectedFlightDetails.departureLocation.location}</div>
           <div>Đến: {selectedFlightDetails.arrivalLocation.location}</div>
@@ -119,7 +120,6 @@ const FlightChoose = () => {
               </div>
             </div>
 
-            {/* Cột thông tin giá */}
             <div className="col-span-2 grid grid-cols-2 gap-4 text-center">
               <div className="border p-4 rounded-lg">
                 <p className="font-semibold text-gray-600">Business</p>

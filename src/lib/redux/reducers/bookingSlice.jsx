@@ -3,21 +3,26 @@ import { createSlice } from "@reduxjs/toolkit";
 const bookingSlice = createSlice({
   name: "bookings",
   initialState: {
-    passengerBooking: [],
+    passengerBooking: {
+      adults: 0,
+      children: 0,
+      infants: 0,
+      total: 0,
+    },
     flightBooking: {},
     flightSeatBooking: [],
     passengerInformation: [],
   },
   reducers: {
-    setPassengerBooking: (state, action) => {
+    setPassenger: (state, action) => {
       state.passengerBooking = action.payload;
     },
 
-    setFlightBooking: (state, action) => {
+    setFlight: (state, action) => {
       state.flightBooking = action.payload;
     },
 
-    setFlighSeatBooking: (state, action) => {
+    setSeat: (state, action) => {
       state.flightSeatBooking = action.payload;
     },
 
@@ -28,9 +33,9 @@ const bookingSlice = createSlice({
 });
 
 export const {
-  setPassengerBooking,
-  setFlightBooking,
-  setFlighSeatBooking,
+  setPassenger,
+  setFlight,
+  setSeat,
   setPassengerInformation,
 } = bookingSlice.actions;
 

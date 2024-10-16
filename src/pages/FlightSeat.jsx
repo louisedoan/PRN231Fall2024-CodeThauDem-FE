@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getBusinessClassSeats, getEconomyClassSeats } from "../lib/api/Seat";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setSeat } from "../lib/redux/reducers/bookingSlice";
 import Button from "../components/ui/Button";
 
 const FlightSeat = () => {
@@ -10,6 +11,9 @@ const FlightSeat = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { flightId, classType } = location.state;
+
+  const totalPassengers = useSelector((state) => state.bookings.passengerBooking.total);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchSeats = async () => {
@@ -32,12 +36,17 @@ const FlightSeat = () => {
     fetchSeats();
   }, [flightId, classType]);
 
-  const toggleSeatSelection = (seatId) => {
-    setSelectedSeats((prevSelectedSeats) =>
-      prevSelectedSeats.includes(seatId)
-        ? prevSelectedSeats.filter((s) => s !== seatId)
-        : [...prevSelectedSeats, seatId]
-    );
+  const toggleSeatSelection = (seat) => {
+    setSelectedSeats((prevSelectedSeats) => {
+      if (prevSelectedSeats.some((s) => s.seatId === seat.seatId)) {
+        return prevSelectedSeats.filter((s) => s.seatId !== seat.seatId);
+      } else if (prevSelectedSeats.length < totalPassengers) {
+        return [...prevSelectedSeats, seat];
+      } else {
+        alert(`You can only select up to ${totalPassengers} seats.`);
+        return prevSelectedSeats;
+      }
+    });
   };
 
   const renderSeats = (seatData, cabinType, columns) => {
@@ -47,7 +56,7 @@ const FlightSeat = () => {
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
       >
         {seatData.map((seat) => {
-          const isSelected = selectedSeats.includes(seat.seatId);
+          const isSelected = selectedSeats.some((s) => s.seatId === seat.seatId);
           const isTaken = seat.status === "Taken";
           const baseColor =
             cabinType === "Business" ? "bg-yellow-300" : "bg-blue-300";
@@ -57,7 +66,7 @@ const FlightSeat = () => {
           return (
             <button
               key={seat.seatId}
-              onClick={() => !isTaken && toggleSeatSelection(seat.seatId)}
+              onClick={() => !isTaken && toggleSeatSelection(seat)}
               className={`m-1 w-10 h-10 rounded-full ${
                 isTaken ? takenColor : isSelected ? selectedColor : baseColor
               } hover:${!isTaken && selectedColor}`}
@@ -72,6 +81,11 @@ const FlightSeat = () => {
   };
 
   const handleNextClick = () => {
+    if (selectedSeats.length !== totalPassengers) {
+      alert(`Please select exactly ${totalPassengers} seats.`);
+      return;
+    }
+    dispatch(setSeat(selectedSeats));
     navigate("/user-information");
   };
 

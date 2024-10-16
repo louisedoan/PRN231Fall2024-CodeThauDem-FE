@@ -1,106 +1,97 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setPassengerInformation } from "../lib/redux/reducers/bookingSlice";
 
 const UserInformation = () => {
-  const [gender, setGender] = useState("");
+  const totalPassengers = useSelector((state) => state.bookings.passengerBooking.total);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [passengerInfo, setPassengerInfo] = useState(
+    Array(totalPassengers).fill({
+      name: "",
+      dob: "",
+      nationality: "",
+      email: "",
+    })
+  );
 
-  const handleGenderChange = (value) => {
-    setGender(value);
+  const handleInputChange = (index, field, value) => {
+    setPassengerInfo((prevInfo) => {
+      const newPassengerInfo = [...prevInfo];
+      newPassengerInfo[index] = {
+        ...newPassengerInfo[index],
+        [field]: value,
+      };
+      return newPassengerInfo;
+    });
+  };
+
+  const handleCheckout = () => {
+    dispatch(setPassengerInformation(passengerInfo));
+    navigate("/checkout");
   };
 
   return (
-    <div className="max-w-md p-6 mx-auto bg-white rounded-lg shadow-md overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-6">Adult</h2>
+    <div className="max-w-4xl p-6 mx-auto bg-white rounded-lg shadow-md">
+      {Array.from({ length: totalPassengers }).map((_, index) => (
+        <div key={index} className="p-4 border rounded-lg bg-gray-50 mb-6">
+          <h2 className="text-2xl font-bold mb-6">Passenger {index + 1}</h2>
 
-      {/* Gender Selection */}
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold">Gender*</label>
-        <div className="flex items-center space-x-6">
-          <label className="flex items-center">
+          {/* Name Field */}
+          <div className="mb-6">
+            <label className="block mb-2 font-semibold">Name*</label>
             <input
-              type="radio"
-              name="gender"
-              value="male"
-              checked={gender === "male"}
-              onChange={() => handleGenderChange("male")}
-              className="mr-2"
+              type="text"
+              placeholder="Full Name"
+              className="w-full border border-gray-300 p-2 rounded"
+              value={passengerInfo[index].name}
+              onChange={(e) => handleInputChange(index, "name", e.target.value)}
             />
-            Male
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="gender"
-              value="female"
-              checked={gender === "female"}
-              onChange={() => handleGenderChange("female")}
-              className="mr-2"
-            />
-            Female
-          </label>
-        </div>
-      </div>
-
-      {/* Name Fields */}
-      <div className="flex gap-4 mb-6">
-        <div className="w-1/2">
-          <label className="block mb-2 font-semibold">Last Name*</label>
-          <input
-            type="text"
-            placeholder="As in ID"
-            className="w-full border border-gray-300 p-2 rounded"
-          />
-        </div>
-        <div className="w-1/2">
-          <label className="block mb-2 font-semibold">First & Middle Name*</label>
-          <input
-            type="text"
-            className="w-full border border-gray-300 p-2 rounded"
-          />
-        </div>
-      </div>
-
-      {/* Date of Birth */}
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold">Date of Birth (DD/MM/YYYY)*</label>
-        <input
-          type="text"
-          placeholder="DD/MM/YYYY"
-          className="w-full border border-gray-300 p-2 rounded"
-        />
-      </div>
-
-      {/* Phone Number */}
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold">Phone Number*</label>
-        <div className="flex">
-          <div className="flex items-center border border-gray-300 p-2 rounded-l">
-            <span className="mr-2">🇻🇳 +84</span>
           </div>
-          <input
-            type="text"
-            placeholder="Phone Number"
-            className="w-full border-t border-b border-r border-gray-300 p-2 rounded-r"
-          />
+
+          {/* Date of Birth */}
+          <div className="mb-6">
+            <label className="block mb-2 font-semibold">Date of Birth (DD/MM/YYYY)*</label>
+            <input
+              type="date"
+              className="w-full border border-gray-300 p-2 rounded"
+              value={passengerInfo[index].dob.split("/").reverse().join("-")}
+              onChange={(e) => handleInputChange(index, "dob", e.target.value)}
+            />
+          </div>
+
+          {/* Nationality */}
+          <div className="mb-6">
+            <label className="block mb-2 font-semibold">Nationality*</label>
+            <input
+              type="text"
+              placeholder="Nationality"
+              className="w-full border border-gray-300 p-2 rounded"
+              value={passengerInfo[index].nationality}
+              onChange={(e) => handleInputChange(index, "nationality", e.target.value)}
+            />
+          </div>
+
+          {/* Email */}
+          <div className="mb-6">
+            <label className="block mb-2 font-semibold">Email*</label>
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full border border-gray-300 p-2 rounded"
+              value={passengerInfo[index].email}
+              onChange={(e) => handleInputChange(index, "email", e.target.value)}
+            />
+          </div>
         </div>
-      </div>
-
-      {/* Email */}
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold">Email*</label>
-        <input
-          type="email"
-          className="w-full border border-gray-300 p-2 rounded"
-        />
-      </div>
-
-      {/* Address */}
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold">Current Address</label>
-        <input
-          type="text"
-          className="w-full border border-gray-300 p-2 rounded"
-        />
-      </div>
+      ))}
+      <button
+        onClick={handleCheckout}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        >
+        Checkout
+      </button>
     </div>
   );
 };

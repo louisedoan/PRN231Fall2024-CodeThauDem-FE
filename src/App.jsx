@@ -21,6 +21,7 @@ import UserInformation from "./pages/UserInformation";
 import Profile from "./pages/Profile";
 import FlightSeat from "./pages/FlightSeat";
 import ManageUsers from "./pages/ManageUsers";
+import Checkout from "./pages/Checkout";
 
 function App() {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ function App() {
           <Route path="flight-seat" element={<FlightSeat />} />
           <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/manage-users" element={<ManageUsers />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </BackgroundBeamsWithCollision>
 

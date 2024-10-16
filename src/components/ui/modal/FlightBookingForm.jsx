@@ -10,7 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PassengerControl from "./PassengerControl";
 import { useNavigate } from "react-router-dom";
-import { setPassengerBooking } from "../../../lib/redux/reducers/bookingSlice";
+import { setPassenger } from "../../../lib/redux/reducers/bookingSlice";
 
 const FlightBookingForm = () => {
   const [isRoundTrip, setIsRoundTrip] = useState(true);
@@ -147,10 +147,11 @@ const FlightBookingForm = () => {
       adults: adultCount,
       children: childCount,
       infants: infantCount,
+      total: adultCount + childCount + infantCount,
     };
 
     // Dispatch passenger booking to Redux store
-    dispatch(setPassengerBooking(passengerBooking));
+    dispatch(setPassenger(passengerBooking));
 
     // Navigate to the next page
     navigate("/flight-choose");
