@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setPassengerInformation } from "../lib/redux/reducers/bookingSlice";
+import { createOrder } from "../lib/api/Order";
 
 const UserInformation = () => {
   const totalPassengers = useSelector((state) => state.bookings.passengerBooking.total);
+  const flightBooking = useSelector((state) => state.bookings.flightBooking);
+  const flightSeatBooking = useSelector((state) => state.bookings.flightSeatBooking);
+  const currentUser = useSelector((state) => state.users.currentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [passengerInfo, setPassengerInfo] = useState(
@@ -15,6 +19,8 @@ const UserInformation = () => {
       email: "",
     })
   );
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
   const handleInputChange = (index, field, value) => {
     setPassengerInfo((prevInfo) => {
@@ -27,13 +33,72 @@ const UserInformation = () => {
     });
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     dispatch(setPassengerInformation(passengerInfo));
-    navigate("/checkout");
+
+    const orderCreate = {
+      orderId: 0,
+      userId: currentUser?.ID || null,
+      orderDate: new Date().toISOString(),
+      status: "Pending",
+      totalPrice: flightSeatBooking.reduce((total, seat) => total + seat.price, 0),
+      orderDetails: passengerInfo.map((passenger, index) => ({
+        orderDetailId: 0,
+        name: passenger.name,
+        doB: new Date(passenger.dob).toISOString(),
+        nationality: passenger.nationality,
+        email: passenger.email,
+        flightId: flightBooking.flightId,
+        tripType: flightBooking.isRoundTrip ? "Round Trip" : "One Way Trip",
+        seatId: flightSeatBooking[index].seatId,
+        status: "Pending",
+        totalAmount: flightSeatBooking[index].price,
+      })),
+      passengers: passengerInfo.map((passenger, index) => ({
+        name: passenger.name,
+        doB: new Date(passenger.dob).toISOString(),
+        nationality: passenger.nationality,
+        email: passenger.email,
+        flightId: flightBooking.flightId,
+        tripType: flightBooking.isRoundTrip ? "Round Trip" : "One Way Trip",
+        seatId: flightSeatBooking[index].seatId,
+        price: flightSeatBooking[index].price,
+      })),
+    };
+    console.log("Order Data:", orderCreate);
+
+    try {
+      const orderResponse = await createOrder(orderCreate);
+      console.log("Order Response:", orderResponse); // Log the order response for debugging
+      setMessage(orderResponse.message);
+      setMessageType(orderResponse.isSuccess ? "success" : "error");
+      if (orderResponse.isSuccess) {
+        navigate("/checkout", { state: { order: orderResponse } });
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+      if (error.message) {
+        setMessage(error.message);
+      } else {
+        setMessage("Failed to create order. Please try again.");
+      }
+      setMessageType("error");
+    }
   };
 
   return (
-    <div className="max-w-4xl p-6 mx-auto bg-white rounded-lg shadow-md">
+    <div className="max-w-full p-6 mx-auto overflow-auto bg-white rounded-lg shadow-md ">
+      {message && (
+        <div
+          className={`mb-6 p-4 rounded-lg ${
+            messageType === "success"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {message}
+        </div>
+      )}
       {Array.from({ length: totalPassengers }).map((_, index) => (
         <div key={index} className="p-4 border rounded-lg bg-gray-50 mb-6">
           <h2 className="text-2xl font-bold mb-6">Passenger {index + 1}</h2>
@@ -58,6 +123,8 @@ const UserInformation = () => {
               className="w-full border border-gray-300 p-2 rounded"
               value={passengerInfo[index].dob.split("/").reverse().join("-")}
               onChange={(e) => handleInputChange(index, "dob", e.target.value)}
+              min="1950-01-01"
+              max="2024-12-31"
             />
           </div>
 
@@ -89,7 +156,7 @@ const UserInformation = () => {
       <button
         onClick={handleCheckout}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        >
+      >
         Checkout
       </button>
     </div>

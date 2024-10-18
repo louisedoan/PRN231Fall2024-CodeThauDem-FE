@@ -17,7 +17,7 @@ const FlightRoutePage = () => {
   const [editId, setEditId] = useState(null);
   const [editLocation, setEditLocation] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-  const [message, setMessage] = useState(""); // State to store the message
+  const [message, setMessage] = useState(""); 
   const [messageType, setMessageType] = useState(""); // State to store the message type (success or error)
 
 
