@@ -70,10 +70,12 @@ const UserInformation = () => {
     try {
       const orderResponse = await createOrder(orderCreate);
       console.log("Order Response:", orderResponse); // Log the order response for debugging
-      setMessage(orderResponse.message);
-      setMessageType(orderResponse.isSuccess ? "success" : "error");
-      if (orderResponse.isSuccess) {
-        navigate("/checkout", { state: { order: orderResponse } });
+      const isSuccess = orderResponse.isSuccess || false;
+      const message = orderResponse.message || "Failed to create order. Please try again.";
+      setMessage(message);
+      setMessageType(isSuccess ? "success" : "error");
+      if (isSuccess) {
+        navigate("/checkout", { state: { order: orderResponse.result } });
       }
     } catch (error) {
       console.error("Error creating order:", error);
