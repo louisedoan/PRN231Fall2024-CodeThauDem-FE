@@ -15,3 +15,16 @@ export const searchOneWayFlight = async (departureLocation, arrivalLocation, dep
   return response.data;
 };
 
+export const createFlight = async() =>{
+  return await axiosClient.post("/api/v1/flights"), {
+
+  }
+
+
+};
+
+export const getAllFlight = async() => {
+  return await axiosClient.get("/api/v1/flights")
+
+  
+}
