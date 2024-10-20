@@ -3,20 +3,20 @@ import usersSlice, { setCurrentUser } from "./reducers/userSlice";
 import flightReducer from "../redux/reducers/flightSlice";
 import bookingSlice from "./reducers/bookingSlice";
 import { persistReducer, persistStore } from "redux-persist";
-import storage from "redux-persist/lib/storage"; 
-
+import storage from "redux-persist/lib/storage";
+import historySlice from "./reducers/historySlice";
 const persistConfig = {
-  key: "root", 
+  key: "root",
   storage,
-  whitelist: ["users", "flights", "bookings"], 
+  whitelist: ["users", "flights", "bookings"],
 };
 
 const rootReducer = combineReducers({
   users: usersSlice,
   flights: flightReducer,
-  bookings : bookingSlice
+  bookings: bookingSlice,
+  history: historySlice,
 });
-
 
 // Create a persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -32,7 +32,6 @@ const store = configureStore({
 
 // Set up persistor for use with PersistGate
 const persistor = persistStore(store);
-
 
 if (typeof window !== "undefined") {
   const currentUser = sessionStorage.getItem("user");
