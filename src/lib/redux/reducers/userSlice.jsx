@@ -53,7 +53,7 @@ const usersSlice = createSlice({
       });
   },
 });
-
+export const selectUserId = (state) => state.users.currentUser?.ID;
 export const {
   setUsersList,
   setUpdateUser,
