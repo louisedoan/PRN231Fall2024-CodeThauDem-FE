@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { fetchUserData, updateUser } from "../lib/api/User";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetailUser } from "../lib/redux/reducers/userSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icon mắt
 
 const Profile = () => {
   const { id } = useParams(); // Lấy userId từ URL (nếu cần)
@@ -20,6 +21,7 @@ const Profile = () => {
     rank: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false); // Thêm trạng thái để quản lý hiển thị mật khẩu
   const [error, setError] = useState("");
 
   // Lấy thông tin người dùng từ API
@@ -110,6 +112,10 @@ const Profile = () => {
     }
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword); // Đổi trạng thái hiển thị mật khẩu
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white flex justify-center items-center pt-20 pb-20">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl border border-gray-200">
@@ -132,18 +138,26 @@ const Profile = () => {
           </div>
 
           {/* Password */}
-          <div className="flex items-center">
+          <div className="flex items-center relative">
             <label className="block font-semibold text-gray-600 w-1/3">
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"} // Kiểm tra trạng thái để thay đổi loại input
               value={profileData.password}
               onChange={(e) =>
                 setProfileData({ ...profileData, password: e.target.value })
               }
               className="block w-2/3 p-3 border border-gray-300 rounded-md"
             />
+            <button
+              type="button"
+              onClick={toggleShowPassword}
+              className="absolute inset-y-0 right-4 flex items-center"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
+              {/* Icon hiển thị/ẩn */}
+            </button>
           </div>
 
           {/* Gender */}

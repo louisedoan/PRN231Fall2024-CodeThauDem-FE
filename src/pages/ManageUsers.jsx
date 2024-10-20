@@ -6,7 +6,8 @@ import {
   deleteUser,
   updateUser,
 } from "../lib/api/User";
-import toast from "react-hot-toast"; // Thêm toast để thông báo
+import toast from "react-hot-toast";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icon con mắt
 
 const ManageUsers = () => {
   const dispatch = useDispatch();
@@ -15,10 +16,22 @@ const ManageUsers = () => {
   const error = useSelector((state) => state.users.error);
 
   const [expandedRole, setExpandedRole] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái mở modal
-  const [selectedUser, setSelectedUser] = useState(null); // Người dùng được chọn để cập nhật
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const usersPerPage = 5; // Số lượng người dùng trên mỗi trang
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [newManagerData, setNewManagerData] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    gender: "Female",
+    dob: "",
+    address: "",
+    nationality: "",
+    status: "Active",
+  });
+  const [showPassword, setShowPassword] = useState(false); // Thêm trạng thái hiển thị mật khẩu
+
+  const usersPerPage = 5;
 
   useEffect(() => {
     dispatch(fetchAllUsers());
@@ -31,7 +44,7 @@ const ManageUsers = () => {
       setExpandedRole(null);
     } else {
       setExpandedRole(role);
-      setCurrentPage(1); // Reset lại trang về trang đầu tiên khi đổi role
+      setCurrentPage(1);
     }
   };
 
@@ -46,9 +59,9 @@ const ManageUsers = () => {
     );
     if (confirmed) {
       try {
-        await deleteUser(user.userId); // Gọi API xóa người dùng
+        await deleteUser(user.userId);
         toast.success("User deleted successfully!");
-        dispatch(fetchAllUsers()); // Tải lại danh sách người dùng sau khi xóa
+        dispatch(fetchAllUsers());
       } catch (error) {
         console.error("Error deleting user:", error);
         toast.error("Failed to delete user");
@@ -58,32 +71,69 @@ const ManageUsers = () => {
     }
   };
 
-  // Mở modal và thiết lập người dùng được chọn để cập nhật
   const handleUpdate = (user) => {
-    setSelectedUser(user); // Thiết lập dữ liệu người dùng vào state
-    setIsModalOpen(true); // Mở modal
+    setSelectedUser(user);
+    setIsModalOpen(true);
   };
 
-  // Xử lý cập nhật thông tin người dùng
   const handleUpdateSubmit = async () => {
     try {
-      await updateUser(selectedUser); // Gọi API cập nhật người dùng
+      await updateUser(selectedUser);
       toast.success("User updated successfully!");
-      setIsModalOpen(false); // Đóng modal sau khi cập nhật thành công
-      dispatch(fetchAllUsers()); // Tải lại danh sách người dùng
+      setIsModalOpen(false);
+      dispatch(fetchAllUsers());
     } catch (error) {
       console.error("Error updating user:", error);
       toast.error("Failed to update user");
     }
   };
 
-  // Cập nhật state khi người dùng thay đổi thông tin trong form
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSelectedUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
+    if (selectedUser) {
+      setSelectedUser((prevUser) => ({
+        ...prevUser,
+        [name]: value,
+      }));
+    } else {
+      setNewManagerData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleCreateManager = async () => {
+    const isEmailExist = usersList.some(
+      (user) => user.email === newManagerData.email
+    );
+    if (isEmailExist) {
+      toast.error("Email already exists. Please use a different email.");
+      return;
+    }
+    try {
+      await createManager(newManagerData);
+      toast.success("Manager created successfully!");
+      setIsModalOpen(false);
+      setNewManagerData({
+        fullname: "",
+        email: "",
+        password: "",
+        gender: "Female",
+        dob: "",
+        address: "",
+        nationality: "",
+        status: "Active",
+      });
+      dispatch(fetchAllUsers());
+    } catch (error) {
+      console.error("Error creating manager:", error);
+      toast.error("Failed to create manager");
+    }
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -144,6 +194,20 @@ const ManageUsers = () => {
               Users in Role: {expandedRole}
             </h3>
 
+            <div className="flex justify-end mb-4">
+              {expandedRole === "Manager" && (
+                <button
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setSelectedUser(null);
+                  }}
+                  className="bg-green-500 text-white py-1 px-3 rounded"
+                >
+                  Create Manager
+                </button>
+              )}
+            </div>
+
             <div className="table-container">
               <table className="w-full bg-white">
                 <thead>
@@ -158,7 +222,9 @@ const ManageUsers = () => {
                       <th className="text-left py-2 px-4">Rank</th>
                     )}
                     <th className="text-left py-2 px-4">Status</th>
-                    <th className="text-left py-2 px-4">Actions</th>
+                    {expandedRole !== "Admin" && (
+                      <th className="text-left py-2 px-4">Actions</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -174,20 +240,22 @@ const ManageUsers = () => {
                         <td className="py-2 px-4">{user.rank || "N/A"}</td>
                       )}
                       <td className="py-2 px-4">{user.status}</td>
-                      <td className="py-2 px-4">
-                        <button
-                          onClick={() => handleUpdate(user)}
-                          className="bg-yellow-500 text-white py-1 px-3 rounded mr-2"
-                        >
-                          Update
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user)}
-                          className="bg-red-500 text-white py-1 px-3 rounded"
-                        >
-                          Delete
-                        </button>
-                      </td>
+                      {expandedRole !== "Admin" && (
+                        <td className="py-2 px-4">
+                          <button
+                            onClick={() => handleUpdate(user)}
+                            className="bg-yellow-500 text-white py-1 px-3 rounded mr-2"
+                          >
+                            Update
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user)}
+                            className="bg-red-500 text-white py-1 px-3 rounded"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -219,19 +287,24 @@ const ManageUsers = () => {
               </button>
             </div>
 
-            {/* Modal cập nhật người dùng */}
-            {isModalOpen && selectedUser && (
+            {isModalOpen && (selectedUser || !selectedUser) && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div className="bg-white p-6 rounded-lg w-1/3">
                   <h4 className="text-md font-semibold mb-2">
-                    Update User Information
+                    {selectedUser
+                      ? "Update User Information"
+                      : "Create Manager"}
                   </h4>
                   <input
                     type="text"
                     name="fullname"
                     placeholder="Full Name"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.fullname}
+                    value={
+                      selectedUser
+                        ? selectedUser.fullname
+                        : newManagerData.fullname
+                    }
                     onChange={handleChange}
                   />
                   <input
@@ -239,21 +312,39 @@ const ManageUsers = () => {
                     name="email"
                     placeholder="Email"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.email}
-                    disabled // Không cho phép thay đổi email
-                  />
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    className="border p-2 mb-2 w-full"
-                    value={selectedUser.password}
+                    value={
+                      selectedUser ? selectedUser.email : newManagerData.email
+                    }
                     onChange={handleChange}
+                    disabled={selectedUser}
                   />
+                  <div className="relative mb-2">
+                    <input
+                      type={showPassword ? "text" : "password"} // Thay đổi loại input dựa trên showPassword
+                      name="password"
+                      placeholder="Password"
+                      className="border p-2 w-full"
+                      value={
+                        selectedUser
+                          ? selectedUser.password
+                          : newManagerData.password
+                      }
+                      onChange={handleChange}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-2 flex items-center"
+                      onClick={toggleShowPassword}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
                   <select
                     name="gender"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.gender}
+                    value={
+                      selectedUser ? selectedUser.gender : newManagerData.gender
+                    }
                     onChange={handleChange}
                   >
                     <option value="Female">Female</option>
@@ -263,7 +354,11 @@ const ManageUsers = () => {
                     type="date"
                     name="dob"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.dob.substring(0, 10)}
+                    value={
+                      selectedUser
+                        ? selectedUser.dob.substring(0, 10)
+                        : newManagerData.dob
+                    }
                     onChange={handleChange}
                   />
                   <input
@@ -271,7 +366,11 @@ const ManageUsers = () => {
                     name="address"
                     placeholder="Address"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.address}
+                    value={
+                      selectedUser
+                        ? selectedUser.address
+                        : newManagerData.address
+                    }
                     onChange={handleChange}
                   />
                   <input
@@ -279,38 +378,57 @@ const ManageUsers = () => {
                     name="nationality"
                     placeholder="Nationality"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.nationality}
+                    value={
+                      selectedUser
+                        ? selectedUser.nationality
+                        : newManagerData.nationality
+                    }
                     onChange={handleChange}
                   />
                   <select
                     name="status"
                     className="border p-2 mb-2 w-full"
-                    value={selectedUser.status}
+                    value={
+                      selectedUser ? selectedUser.status : newManagerData.status
+                    }
                     onChange={handleChange}
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
-
                   {expandedRole === "Member" && (
                     <input
                       type="text"
                       name="rank"
                       placeholder="Rank"
                       className="border p-2 mb-2 w-full"
-                      value={selectedUser.rank || ""}
+                      value={selectedUser ? selectedUser.rank || "" : ""}
                       onChange={handleChange}
                     />
                   )}
                   <div className="flex justify-end space-x-2">
                     <button
-                      onClick={handleUpdateSubmit}
+                      onClick={
+                        selectedUser ? handleUpdateSubmit : handleCreateManager
+                      }
                       className="bg-blue-500 text-white py-2 px-4 rounded-lg"
                     >
-                      Submit
+                      {selectedUser ? "Submit" : "Create"}
                     </button>
                     <button
-                      onClick={() => setIsModalOpen(false)}
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        setNewManagerData({
+                          fullname: "",
+                          email: "",
+                          password: "",
+                          gender: "Female",
+                          dob: "",
+                          address: "",
+                          nationality: "",
+                          status: "Active",
+                        });
+                      }}
                       className="bg-gray-500 text-white py-2 px-4 rounded-lg"
                     >
                       Cancel
