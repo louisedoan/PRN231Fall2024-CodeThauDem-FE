@@ -123,7 +123,7 @@ const UserMenu = ({ currentUser }) => {
                     icon={<CgProfile size={20} />}
                   />
                   <MenuItem
-                    onClick={() => {}}
+                    onClick={() => navigate(`/history`)}
                     closeMenu={closeMenu}
                     label="My history"
                     icon={<FaHistory size={20} />}
