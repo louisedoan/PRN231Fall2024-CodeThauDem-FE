@@ -3,9 +3,9 @@ import axios from "axios";
 const PAYMENT_API_URL = "http://localhost:5176/api/v1/payments";
 
 // API để tạo thanh toán
-export const createPayment = async (paymentData) => {
+export const createPaymentUrl = async (paymentData) => {
   try {
-    const response = await axios.post(PAYMENT_API_URL, paymentData);
+    const response = await axios.post(PAYMENT_API_URL,paymentData);
     return response.data; // Trả về PaymentDTO từ API
   } catch (error) {
     throw new Error(error.response ? error.response.data : error.message);

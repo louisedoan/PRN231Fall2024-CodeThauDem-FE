@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setPassengerInformation } from "../lib/redux/reducers/bookingSlice";
+import { setPassengerInformation, setOrderId } from "../lib/redux/reducers/bookingSlice";
 import { createOrder } from "../lib/api/Order";
 
 const UserInformation = () => {
@@ -75,6 +75,7 @@ const UserInformation = () => {
       setMessage(message);
       setMessageType(isSuccess ? "success" : "error");
       if (isSuccess) {
+        dispatch(setOrderId(orderResponse.data.orderId));
         navigate("/checkout", { state: { order: orderResponse.result } });
       }
     } catch (error) {

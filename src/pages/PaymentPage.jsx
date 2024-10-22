@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { createPayment } from "../lib/api/Payment"; // Import API để tạo thanh toán
+import { createPaymentUrl } from "../lib/api/Payment"; // Import API để tạo thanh toán
 
 export default function PaymentPage() {
   const location = useLocation();
@@ -19,7 +19,7 @@ export default function PaymentPage() {
     console.log("Payment data being sent:", paymentData);
 
     try {
-      const paymentResponse = await createPayment(paymentData); // Gọi API để tạo thanh toán
+      const paymentResponse = await createPaymentUrl(paymentData); // Gọi API để tạo thanh toán
       console.log("Payment response:", paymentResponse);
 
       const paymentUrl = paymentResponse.paymentUrl;
