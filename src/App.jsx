@@ -24,6 +24,9 @@ import ManageUsers from "./pages/ManageUsers";
 import Checkout from "./pages/Checkout";
 import ManageFlight from "./pages/ManageFlight";
 import History from "./pages/History";
+import PaymentPage from "./pages/PaymentPage"; // Trang thanh toán
+import VnPayReturn from "./pages/VnPayReturn";
+
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,6 +60,8 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/manage-flight" element={<ManageFlight />} />
           <Route path="/history" element={<History />} />
+          <Route path="/payment" element={<PaymentPage />} />{" "}
+          <Route path="/vnpay_return" element={<VnPayReturn />} />
         </Routes>
       </BackgroundBeamsWithCollision>
 

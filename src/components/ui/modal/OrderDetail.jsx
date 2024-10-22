@@ -1,7 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Dùng để điều hướng
 
 export default function OrderDetail({ order, onBack }) {
-  // Kiểm tra nếu orderDetails không phải là mảng hoặc không tồn tại
+  const navigate = useNavigate();
+
+  const handlePaymentRedirect = () => {
+    navigate("/payment", {
+      state: { orderId: order.orderId, totalAmount: order.totalPrice },
+    });
+  };
+
   if (!order.orderDetails || !Array.isArray(order.orderDetails)) {
     return <div>Không có chi tiết vé để hiển thị.</div>;
   }
@@ -49,7 +57,7 @@ export default function OrderDetail({ order, onBack }) {
               </td>
               <td className="px-6 py-4 text-sm text-gray-900">
                 {ticket.status === "Pending" ? (
-                  <span className="text-green-500">Có thể thanh toán/hủy</span>
+                  <span className="text-green-500">Có thể thanh toán</span>
                 ) : (
                   <span className="text-red-500">Đã thanh toán/hủy</span>
                 )}
@@ -58,6 +66,19 @@ export default function OrderDetail({ order, onBack }) {
           ))}
         </tbody>
       </table>
+
+      {/* Chuyển hướng đến trang thanh toán nếu trạng thái đơn hàng là Pending */}
+      {order.status === "Pending" && (
+        <div className="mt-4">
+          <button
+            onClick={handlePaymentRedirect}
+            className="px-4 py-2 bg-green-500 text-white rounded"
+          >
+            Thanh Toán
+          </button>
+        </div>
+      )}
+
       <button
         className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
         onClick={onBack}
