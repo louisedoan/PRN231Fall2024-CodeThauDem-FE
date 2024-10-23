@@ -1,10 +1,21 @@
 import React from "react";
+import axios from "axios";
 
 export default function OrderDetail({ order, onBack }) {
   // Kiểm tra nếu orderDetails không phải là mảng hoặc không tồn tại
   if (!order.orderDetails || !Array.isArray(order.orderDetails)) {
     return <div>Không có chi tiết vé để hiển thị.</div>;
   }
+
+  const handleCancelTicket = async (ticketId) => {
+    try {
+      const response = await axios.put(`/api/cancel-ticket/${ticketId}`);
+      alert(response.data.message); // Thông báo kết quả hủy vé
+      window.location.reload(); // Tải lại chi tiết đơn hàng sau khi hủy thành công
+    } catch (error) {
+      alert("Lỗi khi hủy vé: " + error.response.data.message);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -47,11 +58,16 @@ export default function OrderDetail({ order, onBack }) {
               <td className="px-6 py-4 text-sm text-gray-900">
                 {ticket.status}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-900">
+              <td className="px-6 py-4">
                 {ticket.status === "Pending" ? (
-                  <span className="text-green-500">Có thể thanh toán/hủy</span>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                    onClick={() => handleCancelTicket(ticket.orderDetailId)}
+                  >
+                    Hủy Vé
+                  </button>
                 ) : (
-                  <span className="text-red-500">Đã thanh toán/hủy</span>
+                  <span className="text-gray-500">Không thể hủy</span>
                 )}
               </td>
             </tr>
