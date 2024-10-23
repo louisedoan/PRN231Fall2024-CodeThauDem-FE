@@ -1,10 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { createPaymentUrl } from "../lib/api/Payment";
 
 const Checkout = () => {
+  const dispatch = useDispatch();
   const passengerInformation = useSelector((state) => state.bookings.passengerInformation);
   const flightBooking = useSelector((state) => state.bookings.flightBooking);
   const flightSeatBooking = useSelector((state) => state.bookings.flightSeatBooking);
+  const orderId = useSelector((state) => state.bookings.orderId); // Get orderId from Redux state
 
   const formatDate = (dateString) => {
     const [year, month, day] = dateString.split("-");
@@ -27,6 +30,23 @@ const Checkout = () => {
 
   const calculateTotalPrice = () => {
     return flightSeatBooking.reduce((total, seat) => total + seat.price, 0);
+  };
+
+  const handlePurchase = async () => {
+    try {
+      const paymentData = {
+        orderId: orderId
+      };
+      const response = await createPaymentUrl(paymentData);
+      if (response.paymentUrl) {
+        window.location.href = response.paymentUrl; // Redirect to payment URL
+      } else {
+        alert("Failed to create payment URL. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating payment URL:", error);
+      alert("Failed to create payment URL. Please try again.");
+    }
   };
 
   return (
@@ -83,7 +103,7 @@ const Checkout = () => {
           </div>
 
           <button
-            onClick={() => alert("Proceeding to payment...")}
+            onClick={handlePurchase}
             className="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
             Purchase

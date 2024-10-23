@@ -29,6 +29,9 @@ const bookingSlice = createSlice({
     setPassengerInformation: (state, action) => {
       state.passengerInformation = action.payload;
     },
+    setOrderId: (state, action) => {
+      state.orderId = action.payload;
+    },
   },
 });
 
@@ -37,6 +40,7 @@ export const {
   setFlight,
   setSeat,
   setPassengerInformation,
+  setOrderId,
 } = bookingSlice.actions;
 
 export default bookingSlice.reducer;
