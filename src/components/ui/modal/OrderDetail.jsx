@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"; // Dùng để điều hướng
 export default function OrderDetail({ order, onBack }) {
   const navigate = useNavigate();
 
+  // Chuyển hướng thẳng đến PaymentPage khi nhấn Thanh Toán
   const handlePaymentRedirect = () => {
     navigate("/payment", {
       state: { orderId: order.orderId, totalAmount: order.totalPrice },
@@ -67,7 +68,7 @@ export default function OrderDetail({ order, onBack }) {
         </tbody>
       </table>
 
-      {/* Chuyển hướng đến trang thanh toán nếu trạng thái đơn hàng là Pending */}
+      {/* Chuyển hướng thẳng đến PaymentPage khi nhấn Thanh Toán */}
       {order.status === "Pending" && (
         <div className="mt-4">
           <button
