@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { createPaymentUrl } from "../lib/api/Payment"; // Import API để tạo thanh toán
+import { createPaymentUrl } from "../lib/api/Payment"; // Đường dẫn đúng đến API
 
 export default function PaymentPage() {
   const location = useLocation();
@@ -9,39 +9,39 @@ export default function PaymentPage() {
   console.log("Order ID:", orderId);
   console.log("Total Amount:", totalAmount);
 
-  const handlePayment = async () => {
-    const paymentData = {
-      orderId: orderId,
-      amount: totalAmount,
-      paymentMethod: "vnpay",
+  useEffect(() => {
+    const handlePayment = async () => {
+      const paymentData = {
+        orderId: orderId,
+        amount: totalAmount,
+        paymentMethod: "vnpay",
+      };
+
+      console.log("Payment data being sent:", paymentData);
+
+      try {
+        const paymentResponse = await createPaymentUrl(paymentData); // Gọi API để tạo thanh toán
+        console.log("Payment response:", paymentResponse);
+
+        const paymentUrl = paymentResponse.paymentUrl;
+        if (paymentUrl) {
+          window.location.href = paymentUrl; // Chuyển hướng người dùng tới VNPay
+        } else {
+          console.error("Không tìm thấy URL thanh toán");
+        }
+      } catch (error) {
+        console.error("Lỗi khi tạo thanh toán:", error.message);
+      }
     };
 
-    console.log("Payment data being sent:", paymentData);
-
-    try {
-      const paymentResponse = await createPaymentUrl(paymentData); // Gọi API để tạo thanh toán
-      console.log("Payment response:", paymentResponse);
-
-      const paymentUrl = paymentResponse.paymentUrl;
-      if (paymentUrl) {
-        window.location.href = paymentUrl; // Chuyển hướng người dùng tới VNPay
-      } else {
-        console.error("Không tìm thấy URL thanh toán");
-      }
-    } catch (error) {
-      console.error("Lỗi khi tạo thanh toán:", error.message);
-    }
-  };
+    handlePayment(); // Gọi hàm thanh toán ngay khi trang được tải
+  }, [orderId, totalAmount]);
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold mb-4">Trang Thanh Toán</h2>
-      <button
-        onClick={handlePayment}
-        className="px-4 py-2 bg-green-500 text-white rounded"
-      >
-        Thanh Toán
-      </button>
+      <h2 className="text-2xl font-bold mb-4">
+        Đang chuyển hướng tới VNPay...
+      </h2>
     </div>
   );
 }
