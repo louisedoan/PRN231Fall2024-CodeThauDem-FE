@@ -36,9 +36,9 @@ export default function OrderList({ orders, onViewDetails }) {
             <th className="px-6 py-3 text-sm font-medium text-gray-700">
               Ngày Giờ Bay
             </th>
-            <th className="px-6 py-3 text-sm font-medium text-gray-700">
+            {/* <th className="px-6 py-3 text-sm font-medium text-gray-700">
               Giờ Check-in
-            </th>
+            </th> */}
             <th className="px-6 py-3 text-sm font-medium text-gray-700">
               Trạng Thái
             </th>
@@ -74,9 +74,9 @@ export default function OrderList({ orders, onViewDetails }) {
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {order.arrivalLocation || "Không xác định"}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                {/* <td className="px-6 py-4 text-sm text-gray-900">
                   {flightDateTime.toLocaleString()}
-                </td>
+                </td> */}
                 <td className="px-6 py-4 text-sm text-gray-900">
                   {checkinTime.toLocaleString()}
                 </td>
