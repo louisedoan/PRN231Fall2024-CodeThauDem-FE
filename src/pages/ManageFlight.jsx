@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getAllFlight } from   "../lib/api/Flight"; // Import the function
+import axios from "axios";
+import { getAllFlight } from "../lib/api/Flight";
+import { getAllPlanes } from "../lib/api/Plane";
+import { getLocations } from "../lib/api/Location";
 
 function ManageFlight() {
   const [flightData, setFlightData] = useState({
@@ -9,27 +12,50 @@ function ManageFlight() {
     arrivalLocation: "",
     arrivalTime: "",
     flightStatus: "",
+    planeId: "",
   });
   
   const [flights, setFlights] = useState([]);
+  const [planes, setPlanes] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  // Fetch existing flights when component mounts
   useEffect(() => {
     const fetchFlights = async () => {
       try {
-        const response = await getAllFlight(); // Call the getAllFlight function
-        setFlights(response.data); // Update the flights state with fetched data
+        const response = await getAllFlight();
+        setFlights(response.data);
       } catch (error) {
         console.error("Error fetching flights:", error);
       }
     };
 
-    fetchFlights(); // Call the function
+    const fetchPlanes = async () => {
+      try {
+        const response = await getAllPlanes();
+        setPlanes(response.data);
+      } catch (error) {
+        console.error("Error fetching planes:", error);
+      }
+    };
+
+    const fetchLocations = async () => {
+      try {
+        const response = await getLocations();
+        setLocations(response.data);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchFlights();
+    fetchPlanes();
+    fetchLocations();
   }, []);
 
+  // Xử lý khi người dùng thay đổi departure hoặc arrival
   const handleChange = (e) => {
     setFlightData({ ...flightData, [e.target.name]: e.target.value });
   };
@@ -39,7 +65,7 @@ function ManageFlight() {
     axios.post("/api/flights", flightData)
       .then(response => {
         console.log("Flight created successfully", response.data);
-        setFlights([...flights, response.data]); // Add the new flight to the flight list
+        setFlights([...flights, response.data]);
         setMessage("Flight created successfully");
         setMessageType("success");
       })
@@ -49,6 +75,16 @@ function ManageFlight() {
         setMessageType("error");
       });
   };
+
+  // Lọc danh sách địa điểm arrival dựa trên departure đã chọn
+  const filteredArrivalLocations = locations.filter(
+    (location) => location.location !== flightData.departureLocation
+  );
+
+  // Lọc danh sách địa điểm departure dựa trên arrival đã chọn
+  const filteredDepartureLocations = locations.filter(
+    (location) => location.location !== flightData.arrivalLocation
+  );
 
   return (
     <div className="w-full flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto z-20">
@@ -80,15 +116,23 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
-            <input
-              type="text"
+            
+            {/* Departure Location Dropdown */}
+            <select
               name="departureLocation"
               value={flightData.departureLocation}
               onChange={handleChange}
-              placeholder="Departure Location"
               required
               className="p-2 border border-gray-300 rounded-lg"
-            />
+            >
+              <option value="">Select Departure Location</option>
+              {filteredDepartureLocations.map((location) => (
+                <option key={location.flightRouteId} value={location.location}>
+                  {location.location}
+                </option>
+              ))}
+            </select>
+            
             <input
               type="datetime-local"
               name="departureTime"
@@ -97,15 +141,23 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
-            <input
-              type="text"
+            
+            {/* Arrival Location Dropdown */}
+            <select
               name="arrivalLocation"
               value={flightData.arrivalLocation}
               onChange={handleChange}
-              placeholder="Arrival Location"
               required
               className="p-2 border border-gray-300 rounded-lg"
-            />
+            >
+              <option value="">Select Arrival Location</option>
+              {filteredArrivalLocations.map((location) => (
+                <option key={location.flightRouteId} value={location.location}>
+                  {location.location}
+                </option>
+              ))}
+            </select>
+            
             <input
               type="datetime-local"
               name="arrivalTime"
@@ -123,6 +175,23 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
+
+            {/* Plane selection dropdown */}
+            <select
+              name="planeId"
+              value={flightData.planeId}
+              onChange={handleChange}
+              required
+              className="p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Select Plane</option>
+              {planes.map((plane) => (
+                <option key={plane.planeId} value={plane.planeId}>
+                  {plane.planeCode} 
+                </option>
+              ))}
+            </select>
+
             <button type="submit" className="bg-green-600 text-white p-3 rounded-lg">
               Create Flight
             </button>
@@ -136,7 +205,7 @@ function ManageFlight() {
         )}
 
         <ul className="space-y-4 w-full">
-          {flights.map((flight, index) => (
+          {flights.map((flight) => (
             <li key={flight.flightNumber} className="flex justify-between items-center p-3 border border-gray-300 rounded-lg">
               <div>
                 <p>Flight Number: {flight.flightNumber}</p>
