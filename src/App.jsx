@@ -26,19 +26,23 @@ import ManageFlight from "./pages/ManageFlight";
 import History from "./pages/History";
 import PaymentPage from "./pages/PaymentPage"; // Trang thanh toán
 import VnPayReturn from "./pages/VnPayReturn";
+import PasswordForgot from "./pages/ForgotPassword/ForgotPassword";
+import PasswordReset from "./pages/ForgotPassword/ResetPassword";
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const excludeLayoutPaths = ["/forgot-password", "/reset-password"];
   const currentUser = useSelector((state) => state.users.currentUser);
+  const shouldExcludeLayout = excludeLayoutPaths.includes(location.pathname);
 
   return (
     <>
-      <Navbar />
-      <ToasterProvider />
-      <LoginModal />
-      <RegisterModal />
-
+    <ToasterProvider />
+    <LoginModal />
+    <RegisterModal />
+    {!shouldExcludeLayout && <Navbar /> }
+    <div className={shouldExcludeLayout ? "no-layout" : "with-layout"}>
       <BackgroundBeamsWithCollision>
         <Routes>
           <Route
@@ -62,12 +66,16 @@ function App() {
           <Route path="/history" element={<History />} />
           <Route path="/payment" element={<PaymentPage />} />{" "}
           <Route path="/vnpay_return" element={<VnPayReturn />} />
+          <Route path="/forgot-password" element={<PasswordForgot />} />
+          <Route path="/reset-password" element={<PasswordReset />} />
         </Routes>
       </BackgroundBeamsWithCollision>
+    </div>
+    {!shouldExcludeLayout && <Footer />}
 
-      {currentUser?.Role !== "Admin" && <Footer />}
-    </>
-  );
+    {currentUser?.Role !== "Admin"}
+  </>
+);
 }
 
 export default App;
