@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function OrderDetail({ order, onBack }) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const navigate = useNavigate();
 
   if (!order.orderDetails || !Array.isArray(order.orderDetails)) {
     return (
       <div className="text-center mt-4">Không có chi tiết vé để hiển thị.</div>
     );
   }
+
+  const handlePaymentClick = (ticket) => {
+    navigate("/payment", {
+      state: { orderId: ticket.orderDetailId, totalAmount: ticket.totalAmount },
+    });
+  };
 
   const handleCancelClick = (ticketId) => {
     setSelectedTicketId(ticketId);
@@ -95,13 +103,20 @@ export default function OrderDetail({ order, onBack }) {
               <td className="px-4 py-2">
                 {ticket.status === "Pending" ? (
                   <button
+                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                    onClick={() => handlePaymentClick(ticket)}
+                  >
+                    Thanh Toán
+                  </button>
+                ) : ticket.status === "Success" ? (
+                  <button
                     className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
                     onClick={() => handleCancelClick(ticket.orderDetailId)}
                   >
                     Hủy Vé
                   </button>
                 ) : (
-                  <span className="text-gray-500">Không thể hủy</span>
+                  <span className="text-gray-500">Không thể thao tác</span>
                 )}
               </td>
             </tr>
