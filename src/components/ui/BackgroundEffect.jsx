@@ -1,4 +1,4 @@
-"use client";
+
 import { cn } from "../../utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useRef, useState, useEffect } from "react";
@@ -67,7 +67,7 @@ export const BackgroundBeamsWithCollision = ({
     (<div
       ref={parentRef}
       className={cn(
-        "h-full z-10  bg-gradient-to-b from-white to-neutral-100 relative flex items-center w-full justify-center ",
+        "h-full z-10  bg-gradient-to-b from-white to-neutral-100 relative flex items-center w-full justify-center overflow-hidden ",
        
      
      // h-screen if you want bigger

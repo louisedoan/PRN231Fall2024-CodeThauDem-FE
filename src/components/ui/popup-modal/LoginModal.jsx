@@ -14,6 +14,7 @@ import { ClipLoader } from "react-spinners";
 import InputField from "../popup-modal/InputField";
 import { loginUser } from "../../../lib/api/Authen";
 import { setCurrentUser } from "../../../lib/redux/reducers/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   email: yup.string().email("Email is invalid").required("Email is required"),
@@ -22,6 +23,7 @@ const schema = yup.object().shape({
 
 const LoginModal = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +68,12 @@ const LoginModal = () => {
     loginModal.onClose();
     registerModal.onOpen();
   }, [loginModal, registerModal ])
+
+
+  const handleClickForgotPassword = () => {
+    loginModal.onClose();
+    navigate("/forgot-password");
+  };
 
   {
     /*----------------RENDER INSIDE MODAL COMPONENT WITH PROPS---------*/
@@ -118,7 +126,7 @@ const LoginModal = () => {
         <div className="justify-center flex flex-row items-center gap-2">
           <div>Forgot your password ? </div>
           <div
-            onClick={""}
+            onClick={handleClickForgotPassword}
             className="text-neutral-800 cursor-pointer hover:underline"
           >
             Click here
