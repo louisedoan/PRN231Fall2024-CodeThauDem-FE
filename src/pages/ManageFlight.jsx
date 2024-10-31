@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { getAllFlight } from "../lib/api/Flight";
+import { getAllFlight, createFlight } from "../lib/api/Flight";
 import { getAllPlanes } from "../lib/api/Plane";
 import { getLocations } from "../lib/api/Location";
 
@@ -11,10 +11,9 @@ function ManageFlight() {
     departureTime: "",
     arrivalLocation: "",
     arrivalTime: "",
-    flightStatus: "",
     planeId: "",
   });
-  
+
   const [flights, setFlights] = useState([]);
   const [planes, setPlanes] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -55,50 +54,44 @@ function ManageFlight() {
     fetchLocations();
   }, []);
 
-  // Xử lý khi người dùng thay đổi departure hoặc arrival
   const handleChange = (e) => {
-    setFlightData({ ...flightData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFlightData({
+      ...flightData,
+      [name]: name === "departureLocation" || name === "arrivalLocation" ? parseInt(value, 10) : value,
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.post("/api/flights", flightData)
-      .then(response => {
-        console.log("Flight created successfully", response.data);
-        setFlights([...flights, response.data]);
-        setMessage("Flight created successfully");
-        setMessageType("success");
-      })
-      .catch(error => {
-        console.error("Error creating flight:", error);
-        setMessage("There was an error creating the flight");
-        setMessageType("error");
-      });
+    try {
+      const response = await createFlight(flightData);
+      setFlights([...flights, response.data]);
+      setMessage("Flight created successfully");
+      setMessageType("success");
+      setIsAdding(false);
+    } catch (error) {
+      setMessage("There was an error creating the flight");
+      setMessageType("error");
+    }
   };
 
-  // Lọc danh sách địa điểm arrival dựa trên departure đã chọn
   const filteredArrivalLocations = locations.filter(
-    (location) => location.location !== flightData.departureLocation
+    (location) => location.flightRouteId !== parseInt(flightData.departureLocation, 10)
   );
 
-  // Lọc danh sách địa điểm departure dựa trên arrival đã chọn
   const filteredDepartureLocations = locations.filter(
-    (location) => location.location !== flightData.arrivalLocation
+    (location) => location.flightRouteId !== parseInt(flightData.arrivalLocation, 10)
   );
 
   return (
     <div className="w-full flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto z-20">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Flight Management
-      </h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Flight Management</h1>
 
       <div className="w-full p-6 bg-white rounded-2xl shadow-2xl ">
         <div className="flex justify-end mb-6">
           <button
-            className="hover:no-underline hover:rounded-tl-3xl hover:rounded-br-2xl hover:bg-secondary transition-all duration-100 ease-out clickable flex items-center whitespace-nowrap justify-center font-semibold p-3 sm-bold-caps gap-x-2 border border-primary
-                            hover:text-  hover:border-primary
-                            active:border-primary active:text-black
-                            max-w-[300px] text-white cursor-pointer bg-green-600"
+            className="hover:no-underline hover:rounded-tl-3xl hover:rounded-br-2xl hover:bg-secondary transition-all duration-100 ease-out clickable flex items-center whitespace-nowrap justify-center font-semibold p-3 sm-bold-caps gap-x-2 border border-primary hover:text- hover:border-primary active:border-primary active:text-black max-w-[300px] text-white cursor-pointer bg-green-600"
             onClick={() => setIsAdding(true)}
           >
             Add Flight
@@ -108,6 +101,7 @@ function ManageFlight() {
         {isAdding && (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-6">
             <input
+              id="flightNumber"
               type="text"
               name="flightNumber"
               value={flightData.flightNumber}
@@ -127,13 +121,14 @@ function ManageFlight() {
             >
               <option value="">Select Departure Location</option>
               {filteredDepartureLocations.map((location) => (
-                <option key={location.flightRouteId} value={location.location}>
+                <option key={location.flightRouteId} value={location.flightRouteId}>
                   {location.location}
                 </option>
               ))}
             </select>
             
             <input
+              id="departureTime"
               type="datetime-local"
               name="departureTime"
               value={flightData.departureTime}
@@ -152,13 +147,14 @@ function ManageFlight() {
             >
               <option value="">Select Arrival Location</option>
               {filteredArrivalLocations.map((location) => (
-                <option key={location.flightRouteId} value={location.location}>
+                <option key={location.flightRouteId} value={location.flightRouteId}>
                   {location.location}
                 </option>
               ))}
             </select>
             
             <input
+              id="arrivalTime"
               type="datetime-local"
               name="arrivalTime"
               value={flightData.arrivalTime}
@@ -166,16 +162,7 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
-            <input
-              type="text"
-              name="flightStatus"
-              value={flightData.flightStatus}
-              onChange={handleChange}
-              placeholder="Flight Status"
-              required
-              className="p-2 border border-gray-300 rounded-lg"
-            />
-
+          
             {/* Plane selection dropdown */}
             <select
               name="planeId"
