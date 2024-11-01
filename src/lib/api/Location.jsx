@@ -17,6 +17,14 @@ export const getLocations = async () => {
         throw error;
     }
 };
+export const getSingleLocation = async () => {
+    try {
+        const response = await axiosClient.get("/api/v1/flightroutes/get-all");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
 
 export const deleteLocation = async (flightRouteId) => {
     try {

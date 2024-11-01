@@ -25,7 +25,7 @@ function ManageFlight() {
     const fetchFlights = async () => {
       try {
         const response = await getAllFlight();
-        setFlights(response.data);
+        setFlights(response.data || []); // Ensure data is an array
       } catch (error) {
         console.error("Error fetching flights:", error);
       }
@@ -34,7 +34,7 @@ function ManageFlight() {
     const fetchPlanes = async () => {
       try {
         const response = await getAllPlanes();
-        setPlanes(response.data);
+        setPlanes(response.data || []); // Ensure data is an array
       } catch (error) {
         console.error("Error fetching planes:", error);
       }
@@ -43,7 +43,7 @@ function ManageFlight() {
     const fetchLocations = async () => {
       try {
         const response = await getLocations();
-        setLocations(response.data);
+        setLocations(response.data || []); // Ensure data is an array
       } catch (error) {
         console.error("Error fetching locations:", error);
       }
@@ -88,7 +88,7 @@ function ManageFlight() {
     <div className="w-full flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto z-20">
       <h1 className="text-2xl font-bold text-center mb-6">Flight Management</h1>
 
-      <div className="w-full p-6 bg-white rounded-2xl shadow-2xl ">
+      <div className="w-full p-6 bg-white rounded-2xl shadow-2xl">
         <div className="flex justify-end mb-6">
           <button
             className="hover:no-underline hover:rounded-tl-3xl hover:rounded-br-2xl hover:bg-secondary transition-all duration-100 ease-out clickable flex items-center whitespace-nowrap justify-center font-semibold p-3 sm-bold-caps gap-x-2 border border-primary hover:text- hover:border-primary active:border-primary active:text-black max-w-[300px] text-white cursor-pointer bg-green-600"
@@ -110,7 +110,7 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
-            
+
             {/* Departure Location Dropdown */}
             <select
               name="departureLocation"
@@ -126,7 +126,7 @@ function ManageFlight() {
                 </option>
               ))}
             </select>
-            
+
             <input
               id="departureTime"
               type="datetime-local"
@@ -136,7 +136,7 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
-            
+
             {/* Arrival Location Dropdown */}
             <select
               name="arrivalLocation"
@@ -152,7 +152,7 @@ function ManageFlight() {
                 </option>
               ))}
             </select>
-            
+
             <input
               id="arrivalTime"
               type="datetime-local"
@@ -162,7 +162,7 @@ function ManageFlight() {
               required
               className="p-2 border border-gray-300 rounded-lg"
             />
-          
+
             {/* Plane selection dropdown */}
             <select
               name="planeId"
@@ -174,7 +174,7 @@ function ManageFlight() {
               <option value="">Select Plane</option>
               {planes.map((plane) => (
                 <option key={plane.planeId} value={plane.planeId}>
-                  {plane.planeCode} 
+                  {plane.planeCode}
                 </option>
               ))}
             </select>
@@ -192,17 +192,20 @@ function ManageFlight() {
         )}
 
         <ul className="space-y-4 w-full">
-          {flights.map((flight) => (
-            <li key={flight.flightNumber} className="flex justify-between items-center p-3 border border-gray-300 rounded-lg">
-              <div>
-                <p>Flight Number: {flight.flightNumber}</p>
-                <p>From: {flight.departureLocation} - To: {flight.arrivalLocation}</p>
-                <p>Departure Time: {new Date(flight.departureTime).toLocaleString()}</p>
-                <p>Arrival Time: {new Date(flight.arrivalTime).toLocaleString()}</p>
-                <p>Status: {flight.flightStatus}</p>
-              </div>
-            </li>
-          ))}
+          {flights.map((flight) => {
+            if (!flight || !flight.flightNumber) return null; // Check for undefined flight or flightNumber
+            return (
+              <li key={flight.flightId} className="flex justify-between items-center p-3 border border-gray-300 rounded-lg">
+                <div>
+                  <p>Flight Number: {flight.flightNumber}</p>
+                  <p>From: {flight.departureLocationName} - To: {flight.arrivalLocationName}</p>
+                  <p>Departure Time: {new Date(flight.departureTime).toLocaleString()}</p>
+                  <p>Arrival Time: {new Date(flight.arrivalTime).toLocaleString()}</p>
+                  <p>Status: {flight.flightStatus}</p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
