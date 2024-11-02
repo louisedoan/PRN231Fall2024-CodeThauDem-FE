@@ -25,7 +25,7 @@ function ManageFlight() {
     const fetchFlights = async () => {
       try {
         const response = await getAllFlight();
-        setFlights(response.data || []); // Ensure data is an array
+        setFlights(response.data || []);
       } catch (error) {
         console.error("Error fetching flights:", error);
       }
@@ -34,7 +34,7 @@ function ManageFlight() {
     const fetchPlanes = async () => {
       try {
         const response = await getAllPlanes();
-        setPlanes(response.data || []); // Ensure data is an array
+        setPlanes(response.data || []);
       } catch (error) {
         console.error("Error fetching planes:", error);
       }
@@ -43,7 +43,7 @@ function ManageFlight() {
     const fetchLocations = async () => {
       try {
         const response = await getLocations();
-        setLocations(response.data || []); // Ensure data is an array
+        setLocations(response.data || []);
       } catch (error) {
         console.error("Error fetching locations:", error);
       }
@@ -58,17 +58,51 @@ function ManageFlight() {
     const { name, value } = e.target;
     setFlightData({
       ...flightData,
-      [name]: name === "departureLocation" || name === "arrivalLocation" ? parseInt(value, 10) : value,
+      [name]:
+        name === "departureLocation" || name === "arrivalLocation"
+          ? parseInt(value, 10)
+          : value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Kiểm tra trùng mã chuyến bay
+    const isFlightNumberDuplicate = flights.some(
+      (flight) => flight.flightNumber === flightData.flightNumber
+    );
+
+    if (isFlightNumberDuplicate) {
+      setMessage("Flight Number đã tồn tại, vui lòng chọn mã khác.");
+      setMessageType("error");
+      return;
+    }
+
+    // Kiểm tra ngày giờ khởi hành và đến
+    const currentDateTime = new Date();
+    const departureTime = new Date(flightData.departureTime);
+    const arrivalTime = new Date(flightData.arrivalTime);
+
+    if (departureTime < currentDateTime || arrivalTime < currentDateTime) {
+      setMessage(
+        "Ngày giờ khởi hành và ngày giờ đến phải lớn hơn hoặc bằng thời gian hiện tại."
+      );
+      setMessageType("error");
+      return;
+    }
+
+    if (arrivalTime <= departureTime) {
+      setMessage("Thời gian đến phải sau thời gian khởi hành.");
+      setMessageType("error");
+      return;
+    }
+
     try {
       const response = await createFlight(flightData);
       setFlights([...flights, response.data]);
       setMessage("Flight created successfully");
-      setMessageType("success");
+setMessageType("success");
       setIsAdding(false);
     } catch (error) {
       setMessage("There was an error creating the flight");
@@ -77,11 +111,13 @@ function ManageFlight() {
   };
 
   const filteredArrivalLocations = locations.filter(
-    (location) => location.flightRouteId !== parseInt(flightData.departureLocation, 10)
+    (location) =>
+      location.flightRouteId !== parseInt(flightData.departureLocation, 10)
   );
 
   const filteredDepartureLocations = locations.filter(
-    (location) => location.flightRouteId !== parseInt(flightData.arrivalLocation, 10)
+    (location) =>
+      location.flightRouteId !== parseInt(flightData.arrivalLocation, 10)
   );
 
   return (
@@ -121,7 +157,10 @@ function ManageFlight() {
             >
               <option value="">Select Departure Location</option>
               {filteredDepartureLocations.map((location) => (
-                <option key={location.flightRouteId} value={location.flightRouteId}>
+                <option
+                  key={location.flightRouteId}
+                  value={location.flightRouteId}
+                >
                   {location.location}
                 </option>
               ))}
@@ -143,11 +182,14 @@ function ManageFlight() {
               value={flightData.arrivalLocation}
               onChange={handleChange}
               required
-              className="p-2 border border-gray-300 rounded-lg"
+className="p-2 border border-gray-300 rounded-lg"
             >
               <option value="">Select Arrival Location</option>
               {filteredArrivalLocations.map((location) => (
-                <option key={location.flightRouteId} value={location.flightRouteId}>
+                <option
+                  key={location.flightRouteId}
+                  value={location.flightRouteId}
+                >
                   {location.location}
                 </option>
               ))}
@@ -179,28 +221,49 @@ function ManageFlight() {
               ))}
             </select>
 
-            <button type="submit" className="bg-green-600 text-white p-3 rounded-lg">
+            <button
+              type="submit"
+              className="bg-green-600 text-white p-3 rounded-lg"
+            >
               Create Flight
             </button>
           </form>
         )}
 
         {message && (
-          <div className={`mb-6 p-4 rounded-lg ${messageType === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+          <div
+            className={`mb-6 p-4 rounded-lg ${
+              messageType === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
             {message}
           </div>
         )}
 
         <ul className="space-y-4 w-full">
           {flights.map((flight) => {
-            if (!flight || !flight.flightNumber) return null; // Check for undefined flight or flightNumber
+            if (!flight || !flight.flightNumber) return null;
             return (
-              <li key={flight.flightId} className="flex justify-between items-center p-3 border border-gray-300 rounded-lg">
+              <li
+                key={flight.flightId}
+                className="flex justify-between items-center p-3 border border-gray-300 rounded-lg"
+              >
                 <div>
                   <p>Flight Number: {flight.flightNumber}</p>
-                  <p>From: {flight.departureLocationName} - To: {flight.arrivalLocationName}</p>
-                  <p>Departure Time: {new Date(flight.departureTime).toLocaleString()}</p>
-                  <p>Arrival Time: {new Date(flight.arrivalTime).toLocaleString()}</p>
+                  <p>
+                    From: {flight.departureLocationName} - To:{" "}
+                    {flight.arrivalLocationName}
+                  </p>
+                  <p>
+                    Departure Time:{" "}
+                    {new Date(flight.departureTime).toLocaleString()}
+                  </p>
+                  <p>
+                    Arrival Time:{" "}
+                    {new Date(flight.arrivalTime).toLocaleString()}
+                  </p>
                   <p>Status: {flight.flightStatus}</p>
                 </div>
               </li>
