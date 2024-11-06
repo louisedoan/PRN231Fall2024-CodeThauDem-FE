@@ -9,7 +9,7 @@ export const fetchOrders = createAsyncThunk(
       const response = await axios.get(
         `${BASE_URL}/api/v1/orders/userId=${userId}`
       );
-      console.log(response.data);
+
       return response.data.order;
     } catch (error) {
       throw new Error(error.response ? error.response.data : error.message);

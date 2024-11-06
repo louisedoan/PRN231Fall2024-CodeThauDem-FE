@@ -51,7 +51,7 @@ export default function OrderDetail({ order, onBack }) {
     setShowConfirmModal(false);
     setSelectedTicketId(null);
   };
-
+  console.log(order.orderDetails);
   return (
     <div className="container mx-auto px-4 py-6">
       <h2 className="text-2xl font-bold mb-4 text-center">
@@ -86,7 +86,7 @@ export default function OrderDetail({ order, onBack }) {
               className="text-center bg-white hover:bg-gray-100 transition"
             >
               <td className="px-4 py-2 text-sm text-gray-900">
-                {ticket.orderDetailId}
+                {ticket.ticketCode}
               </td>
               <td className="px-4 py-2 text-sm text-gray-900">
                 {order.departureLocation || "Không xác định"}
