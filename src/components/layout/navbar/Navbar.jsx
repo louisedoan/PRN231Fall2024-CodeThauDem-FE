@@ -8,9 +8,7 @@ import useRegisterModal from "../../hooks/useRegisterModal";
 import { useSelector } from "react-redux";
 import UserMenu from "./UserMenu";
 
-
 const Navbar = () => {
-
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
 
@@ -19,22 +17,23 @@ const Navbar = () => {
 
   return (
     <div className="sticky top-0 z-40 w-full bg-white shadow-sm">
-      <div className=" border-b-[1px]">
+      <div className=" border-b-[1px] h-[110px]">
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
             <Link to="/">
               <Logo />
             </Link>
 
-            <div className="flex flex-row gap-5">
-              <Item label="About us" link=""></Item>
-              <Item label="My flights" link=""></Item>
-              <Item label="Contact for ticket" link=""></Item>
-              <Item label="Support" link=""></Item>
-            </div>
+            {currentUser?.Role !== "Admin" && (
+              <div className="flex flex-row gap-5">
+                <Item label="About us" link=""></Item>
+                <Item label="My flights" link=""></Item>
+                <Item label="Contact for ticket" link=""></Item>
+                <Item label="Support" link=""></Item>
+              </div>
+            )}
 
-
-             {/* Conditional rendering based on whether user is logged in */}
+            {/* Conditional rendering based on whether user is logged in */}
             <div className="flex flex-row justify-between gap-3">
               {currentUser ? (
                 <UserMenu currentUser={currentUser} />
