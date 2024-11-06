@@ -121,7 +121,7 @@ setMessageType("success");
   );
 
   return (
-    <div className="w-full flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto z-20">
+    <div className=" flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto z-20">
       <h1 className="text-2xl font-bold text-center mb-6">Flight Management</h1>
 
       <div className="w-full p-6 bg-white rounded-2xl shadow-2xl">

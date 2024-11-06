@@ -67,7 +67,23 @@ export const resetPassword = async (token, newPassword) => {
   try {
     nProgress.start();
     const response = await axiosClient.post(
-      `/api/v1/users/reset-password?token=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(newPassword)}`
+      `/api/v1/users/reset-password?token=${encodeURIComponent(
+        token
+      )}&newPassword=${encodeURIComponent(newPassword)}`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  } finally {
+    nProgress.done();
+  }
+};
+
+export const verifyUser = async (token) => {
+  try {
+    nProgress.start();
+    const response = await axiosClient.post(
+      `/api/v1/users/confirm-user?token=${encodeURIComponent(token)}`
     );
     return response.data;
   } catch (error) {

@@ -43,14 +43,6 @@ const UserMenu = ({ currentUser }) => {
     navigate("/");
   }, [dispatch, navigate]);
 
-  const handleFlightRoute = useCallback(() => {
-    navigate("/flight-route");
-  }, [navigate]);
-
-  const handleMangeFlight = useCallback(() => {
-    navigate("/manage-flight");
-  }, [navigate]);
-
   return (
     <div className="relative">
       <div
@@ -92,24 +84,6 @@ const UserMenu = ({ currentUser }) => {
                     closeMenu={closeMenu}
                     label="Dashboard"
                     icon={<MdDashboard size={20} />}
-                  />
-                  <MenuItem
-                    onClick={() => navigate("/manage-users")}
-                    closeMenu={closeMenu}
-                    label="Manage All Users"
-                    icon={<MdManageAccounts size={20} />}
-                  />
-                  <MenuItem
-                    onClick={handleFlightRoute}
-                    closeMenu={closeMenu}
-                    label="Flight Route"
-                    icon={<FaPlane size={20} />}
-                  />
-                  <MenuItem
-                    onClick={handleMangeFlight}
-                    closeMenu={closeMenu}
-                    label="Manage Flight"
-                    icon={<FaPlane size={20} />}
                   />
                   <MenuItem
                     onClick={() => {}}
