@@ -4,7 +4,9 @@ import { fetchUserData, updateUser } from "../lib/api/User";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetailUser } from "../lib/redux/reducers/userSlice";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icon mắt
+import { initializeWallet, getWalletBalance } from "../utils/walletUltils";
 
+initializeWallet();
 const Profile = () => {
   const { id } = useParams(); // Lấy userId từ URL (nếu cần)
   const dispatch = useDispatch();
@@ -20,7 +22,7 @@ const Profile = () => {
     dob: "",
     rank: "",
   });
-
+  const [walletBalance, setWalletBalance] = useState(getWalletBalance());
   const [showPassword, setShowPassword] = useState(false); // Thêm trạng thái để quản lý hiển thị mật khẩu
   const [error, setError] = useState("");
 
@@ -122,7 +124,11 @@ const Profile = () => {
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
           My Profile
         </h2>
-
+        <div className="mb-6 text-center">
+          <p className="text-lg font-semibold text-blue-600">
+            account balance: {walletBalance.toLocaleString()} VND
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-6">
           {/* Email */}
           <div className="flex items-center">
