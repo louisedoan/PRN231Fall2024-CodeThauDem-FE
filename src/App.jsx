@@ -28,22 +28,30 @@ import PaymentPage from "./pages/PaymentPage"; // Trang thanh toán
 import VnPayReturn from "./pages/VnPayReturn";
 import PasswordForgot from "./pages/ForgotPassword/ForgotPassword";
 import PasswordReset from "./pages/ForgotPassword/ResetPassword";
+import FlightReportPage from "./pages/FlightReport/FlightReportPage";
+import VerifyUserPage from "./pages/Verification/VerifyUser";
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const excludeLayoutPaths = ["/forgot-password", "/reset-password"];
+  const excludeLayoutPaths = [
+    "/forgot-password",
+    "/reset-password",
+    "/verify",
+  ];
+
   const currentUser = useSelector((state) => state.users.currentUser);
   const shouldExcludeLayout = excludeLayoutPaths.includes(location.pathname);
 
+  const isAdminRoute = currentUser && currentUser.Role === "Admin";
+
   return (
     <>
-    <ToasterProvider />
-    <LoginModal />
-    <RegisterModal />
-    {!shouldExcludeLayout && <Navbar /> }
-    <div className={shouldExcludeLayout ? "no-layout" : "with-layout"}>
-      <BackgroundBeamsWithCollision>
+      <ToasterProvider />
+      <LoginModal />
+      <RegisterModal />
+      {!shouldExcludeLayout && <Navbar />}
+      <div className={shouldExcludeLayout ? "no-layout" : "with-layout"}>
         <Routes>
           <Route
             path="/"
@@ -68,14 +76,15 @@ function App() {
           <Route path="/vnpay_return" element={<VnPayReturn />} />
           <Route path="/forgot-password" element={<PasswordForgot />} />
           <Route path="/reset-password" element={<PasswordReset />} />
+          <Route path="/flight-report" element={<FlightReportPage />} />
+          <Route path="/verify" element={<VerifyUserPage />} />
         </Routes>
-      </BackgroundBeamsWithCollision>
-    </div>
-    {!shouldExcludeLayout && <Footer />}
+      </div>
+      {!shouldExcludeLayout && !isAdminRoute && <Footer />}
 
-    {currentUser?.Role !== "Admin"}
-  </>
-);
+      {currentUser?.Role !== "Admin"}
+    </>
+  );
 }
 
 export default App;

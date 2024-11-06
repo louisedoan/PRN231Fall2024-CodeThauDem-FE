@@ -17,9 +17,8 @@ const FlightRoutePage = () => {
   const [editId, setEditId] = useState(null);
   const [editLocation, setEditLocation] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-  const [message, setMessage] = useState(""); 
+  const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // State to store the message type (success or error)
-
 
   // Fetch locations
   useEffect(() => {
@@ -199,7 +198,7 @@ const FlightRoutePage = () => {
   };
   //UI
   return (
-    <div className="w-full flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto z-20">
+    <div className="flex h-full flex-col items-center justify-start gap-5 mx-20 overflow-auto">
       <h1 className="text-2xl font-bold text-center mb-6">
         <HeroCover>Manage Flight Routes</HeroCover>
       </h1>
