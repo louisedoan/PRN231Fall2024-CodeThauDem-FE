@@ -126,7 +126,7 @@ const Profile = () => {
         </h2>
         <div className="mb-6 text-center">
           <p className="text-lg font-semibold text-blue-600">
-            account balance: {walletBalance.toLocaleString()} VND
+            Account balance: {walletBalance.toLocaleString()} VND
           </p>
         </div>
         <div className="grid grid-cols-2 gap-6">

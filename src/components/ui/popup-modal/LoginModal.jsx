@@ -1,4 +1,3 @@
-
 import { FcGoogle } from "react-icons/fc";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -15,6 +14,11 @@ import InputField from "../popup-modal/InputField";
 import { loginUser } from "../../../lib/api/Authen";
 import { setCurrentUser } from "../../../lib/redux/reducers/userSlice";
 import { useNavigate } from "react-router-dom";
+import { auth, provider } from "../../../firebase";  
+import { signInWithPopup } from "firebase/auth"; 
+import { jwtDecode } from "jwt-decode";
+import googleLogo from "../../../assets/google.png"; // Import Google logo image
+
 
 const schema = yup.object().shape({
   email: yup.string().email("Email is invalid").required("Email is required"),
@@ -64,6 +68,52 @@ const LoginModal = () => {
     [loginModal, dispatch ]
   );
 
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const token = await user.getIdToken();
+      const refreshToken = user.stsTokenManager.refreshToken;
+      const userInfo = {
+        displayName: user.displayName,
+        email: user.email,
+        accessToken: token,
+        refreshToken: refreshToken,
+      };
+      console.log("User Info:", userInfo);
+      const response = await fetch(
+        `http://localhost:5176/api/v1/users/create-google-user?displayName=${encodeURIComponent(
+          user.displayName
+        )}&email=${encodeURIComponent(user.email)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to create Google user");
+      }
+
+      const apiResult = await response.json();
+      console.log("API Result:", apiResult);
+
+      const jwtToken = apiResult.token;
+      const userFromJwt = jwtDecode(jwtToken);
+      sessionStorage.setItem("token", jwtToken);
+      sessionStorage.setItem("user", JSON.stringify(userFromJwt));
+
+      dispatch(setCurrentUser(userFromJwt));
+      toast.success("Google login successful!");
+      loginModal.onClose();
+    } catch (error) {
+      console.error("Error during Google login:", error);
+      toast.error("Google login failed!");
+    }
+  };
+
   const toogle = useCallback(() => {
     loginModal.onClose();
     registerModal.onOpen();
@@ -110,6 +160,10 @@ const LoginModal = () => {
 
   const footerContent = (
     <div className="flex flex-col gap-4 mt-3 ">
+      <button onClick={handleGoogleLogin} disabled={isLoading} className="btn-google-login flex items-center justify-center gap-2">
+        <img src={googleLogo} alt="Google Logo" className="w-6 h-6" />
+        Login with Google
+      </button>
       <hr />
       <div className="text-neutral-500 text-center mt-4 font-light">
         <div className="justify-center flex flex-row items-center gap-2">
