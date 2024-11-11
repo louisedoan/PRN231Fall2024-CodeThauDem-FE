@@ -355,9 +355,7 @@ const ManageUsers = () => {
                     name="dob"
                     className="border p-2 mb-2 w-full"
                     value={
-                      selectedUser
-                        ? selectedUser.dob.substring(0, 10)
-                        : newManagerData.dob
+                      selectedUser?.dob?.substring(0, 10) || newManagerData.dob
                     }
                     onChange={handleChange}
                   />
