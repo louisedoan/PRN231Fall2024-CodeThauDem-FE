@@ -3,15 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { IoAirplaneSharp } from "react-icons/io5";
 import {
   fetchFlights,
-  setSelectedFlightDetails,
+  setSelectedFlightDetails
 } from "../../../lib/redux/reducers/flightSlice";
 import Button from "../Button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PassengerControl from "./PassengerControl";
 import { useNavigate } from "react-router-dom";
-import { setPassenger } from "../../../lib/redux/reducers/bookingSlice";
+import { setPassenger, resetBooking } from "../../../lib/redux/reducers/bookingSlice";
 import "./customDatePicker.css";
+
 const FlightBookingForm = () => {
   const [isRoundTrip, setIsRoundTrip] = useState(true);
   const [isDepartureDropdownOpen, setIsDepartureDropdownOpen] = useState(false);
@@ -34,6 +35,10 @@ const FlightBookingForm = () => {
 
   useEffect(() => {
     dispatch(fetchFlights());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(resetBooking());
   }, [dispatch]);
 
   useEffect(() => {

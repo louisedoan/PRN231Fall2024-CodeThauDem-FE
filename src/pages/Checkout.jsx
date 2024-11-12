@@ -11,6 +11,7 @@ const Checkout = () => {
   const returnFlightSeatBooking = useSelector((state) => state.bookings.returnFlightSeatBooking);
   const orderId = useSelector((state) => state.bookings.orderId);
   const isRoundTrip = !!returnFlightBooking.flightId;
+  
 
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
@@ -21,7 +22,7 @@ const Checkout = () => {
     const year = date.getFullYear();
     return `${hours}:${minutes} ${day}/${month}/${year}`;
   };
-
+console.log(isRoundTrip);
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };

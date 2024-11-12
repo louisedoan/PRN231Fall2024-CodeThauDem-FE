@@ -42,6 +42,14 @@ const bookingSlice = createSlice({
     setOrderId: (state, action) => {
       state.orderId = action.payload;
     },
+    resetBooking: (state) => {
+      state.passengerInformation = [];
+      state.flightBooking = {};
+      state.returnFlightBooking = {};
+      state.flightSeatBooking = [];
+      state.returnFlightSeatBooking = [];
+      state.orderId = null;
+    },
   },
 });
 
@@ -53,6 +61,7 @@ export const {
   setReturnSeat, // Add this export
   setPassengerInformation,
   setOrderId,
+  resetBooking,
 } = bookingSlice.actions;
 
 export default bookingSlice.reducer;

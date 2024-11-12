@@ -12,9 +12,15 @@ const UserInformation = () => {
     (state) => state.bookings.passengerBooking.total
   );
   const flightBooking = useSelector((state) => state.bookings.flightBooking);
+  const returnFlightBooking = useSelector((state) => state.bookings.returnFlightBooking);
   const flightSeatBooking = useSelector(
     (state) => state.bookings.flightSeatBooking
   );
+  const returnFlightSeatBooking = useSelector(
+    (state) => state.bookings.returnFlightSeatBooking
+  );
+  const selectedFlightDetails = useSelector((state) => state.flights.selectedFlightDetails);
+  const isRoundTrip = selectedFlightDetails.isRoundTrip;
   const currentUser = useSelector((state) => state.users.currentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,30 +57,70 @@ const UserInformation = () => {
       totalPrice: flightSeatBooking.reduce(
         (total, seat) => total + seat.price,
         0
-      ),
-      orderDetails: passengerInfo.map((passenger, index) => ({
-        orderDetailId: 0,
-        name: passenger.name,
-        doB: new Date(passenger.dob).toISOString(),
-        nationality: passenger.nationality,
-        email: passenger.email,
-        flightId: flightBooking.flightId,
-        tripType: flightBooking.isRoundTrip ? "Round Trip" : "One Way Trip",
-        seatId: flightSeatBooking[index].seatId,
-        status: "Pending",
-        totalAmount: flightSeatBooking[index].price,
-        ticketCode: "",
-      })),
-      passengers: passengerInfo.map((passenger, index) => ({
-        name: passenger.name,
-        doB: new Date(passenger.dob).toISOString(),
-        nationality: passenger.nationality,
-        email: passenger.email,
-        flightId: flightBooking.flightId,
-        tripType: flightBooking.isRoundTrip ? "Round Trip" : "One Way Trip",
-        seatId: flightSeatBooking[index].seatId,
-        price: flightSeatBooking[index].price,
-      })),
+      ) + (isRoundTrip ? returnFlightSeatBooking.reduce(
+        (total, seat) => total + seat.price,
+        0
+      ) : 0),
+      orderDetails: passengerInfo.flatMap((passenger, index) => {
+        const details = [
+          {
+            orderDetailId: 0,
+            name: passenger.name,
+            doB: new Date(passenger.dob).toISOString(),
+            nationality: passenger.nationality,
+            email: passenger.email,
+            flightId: flightBooking.flightId,
+            tripType: "One Way Trip",
+            seatId: flightSeatBooking[index].seatId,
+            status: "Pending",
+            totalAmount: flightSeatBooking[index].price,
+            ticketCode: "",
+          }
+        ];
+        if (isRoundTrip) {
+          details.push({
+            orderDetailId: 0,
+            name: passenger.name,
+            doB: new Date(passenger.dob).toISOString(),
+            nationality: passenger.nationality,
+            email: passenger.email,
+            flightId: returnFlightBooking.flightId,
+            tripType: "Round Trip",
+            seatId: returnFlightSeatBooking[index].seatId,
+            status: "Pending",
+            totalAmount: returnFlightSeatBooking[index].price,
+            ticketCode: "",
+          });
+        }
+        return details;
+      }),
+      passengers: passengerInfo.flatMap((passenger, index) => {
+        const passengers = [
+          {
+            name: passenger.name,
+            doB: new Date(passenger.dob).toISOString(),
+            nationality: passenger.nationality,
+            email: passenger.email,
+            flightId: flightBooking.flightId,
+            tripType: "One Way Trip",
+            seatId: flightSeatBooking[index].seatId,
+            price: flightSeatBooking[index].price,
+          }
+        ];
+        if (isRoundTrip) {
+          passengers.push({
+            name: passenger.name,
+            doB: new Date(passenger.dob).toISOString(),
+            nationality: passenger.nationality,
+            email: passenger.email,
+            flightId: returnFlightBooking.flightId,
+            tripType: "Round Trip",
+            seatId: returnFlightSeatBooking[index].seatId,
+            price: returnFlightSeatBooking[index].price,
+          });
+        }
+        return passengers;
+      }),
     };
     console.log("Order Data:", orderCreate);
 
