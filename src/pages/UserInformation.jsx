@@ -6,7 +6,10 @@ import {
   setOrderId,
 } from "../lib/redux/reducers/bookingSlice";
 import { createOrder } from "../lib/api/Order";
-
+const countries = [
+  "VietNam",
+  "America", "Japan"
+];
 const UserInformation = () => {
   const totalPassengers = useSelector(
     (state) => state.bookings.passengerBooking.total
@@ -34,6 +37,7 @@ const UserInformation = () => {
   );
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (index, field, value) => {
     setPassengerInfo((prevInfo) => {
@@ -46,7 +50,38 @@ const UserInformation = () => {
     });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    passengerInfo.forEach((passenger, index) => {
+      if (!passenger.name) {
+        newErrors[`name${index}`] = "Name is required.";
+      }
+      if (!passenger.dob) {
+        newErrors[`dob${index}`] = "Date of birth is required.";
+      } else {
+        const dob = new Date(passenger.dob);
+        if (dob < new Date("1900-01-01") || dob > new Date("2024-12-31")) {
+          newErrors[`dob${index}`] = "Date of birth must be between 1900 and 2024.";
+        }
+      }
+      if (!passenger.nationality) {
+        newErrors[`nationality${index}`] = "Nationality is required.";
+      }
+      if (!passenger.email) {
+        newErrors[`email${index}`] = "Email is required.";
+      } else if (!/\S+@\S+\.\S+/.test(passenger.email)) {
+        newErrors[`email${index}`] = "Email is invalid.";
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleCheckout = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     dispatch(setPassengerInformation(passengerInfo));
 
     const orderCreate = {
@@ -174,6 +209,9 @@ const UserInformation = () => {
               value={passengerInfo[index].name}
               onChange={(e) => handleInputChange(index, "name", e.target.value)}
             />
+            {errors[`name${index}`] && (
+              <p className="text-red-500 text-sm mt-1">{errors[`name${index}`]}</p>
+            )}
           </div>
 
           {/* Date of Birth */}
@@ -186,23 +224,34 @@ const UserInformation = () => {
               className="w-full border border-gray-300 p-2 rounded"
               value={passengerInfo[index].dob.split("/").reverse().join("-")}
               onChange={(e) => handleInputChange(index, "dob", e.target.value)}
-              min="1950-01-01"
+              min="1900-01-01"
               max="2024-12-31"
             />
+            {errors[`dob${index}`] && (
+              <p className="text-red-500 text-sm mt-1">{errors[`dob${index}`]}</p>
+            )}
           </div>
 
           {/* Nationality */}
           <div className="mb-6">
             <label className="block mb-2 font-semibold">Nationality*</label>
-            <input
-              type="text"
-              placeholder="Nationality"
+            <select
               className="w-full border border-gray-300 p-2 rounded"
               value={passengerInfo[index].nationality}
               onChange={(e) =>
                 handleInputChange(index, "nationality", e.target.value)
               }
-            />
+            >
+              <option value="">Select Nationality</option>
+              {countries.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
+            {errors[`nationality${index}`] && (
+              <p className="text-red-500 text-sm mt-1">{errors[`nationality${index}`]}</p>
+            )}
           </div>
 
           {/* Email */}
@@ -217,6 +266,9 @@ const UserInformation = () => {
                 handleInputChange(index, "email", e.target.value)
               }
             />
+            {errors[`email${index}`] && (
+              <p className="text-red-500 text-sm mt-1">{errors[`email${index}`]}</p>
+            )}
           </div>
         </div>
       ))}
