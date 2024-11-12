@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../../lib/api/config/axios-client";
 
 export default function OrderDetail({ order, onBack }) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -27,7 +28,7 @@ export default function OrderDetail({ order, onBack }) {
   const handleCancelTicket = async () => {
     try {
       const response = await axios.put(
-        `/api/v1/orderdetails/cancel/${selectedTicketId}`
+        BASE_URL + `/api/v1/orderdetails/cancel/${selectedTicketId}`
       );
       console.log(response);
       if (response.status === 200) {
