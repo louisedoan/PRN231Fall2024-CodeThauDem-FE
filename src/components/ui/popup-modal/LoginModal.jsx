@@ -14,8 +14,8 @@ import InputField from "../popup-modal/InputField";
 import { loginUser } from "../../../lib/api/Authen";
 import { setCurrentUser } from "../../../lib/redux/reducers/userSlice";
 import { useNavigate } from "react-router-dom";
-import { auth, provider } from "../../../firebase";  
-import { signInWithPopup } from "firebase/auth"; 
+import { auth } from "../../../firebase";  
+import { GoogleAuthProvider,signInWithPopup } from "firebase/auth"; 
 import { jwtDecode } from "jwt-decode";
 import googleLogo from "../../../assets/google.png"; // Import Google logo image
 
@@ -70,6 +70,7 @@ const LoginModal = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const token = await user.getIdToken();

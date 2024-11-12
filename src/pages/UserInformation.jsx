@@ -81,9 +81,9 @@ const UserInformation = () => {
     if (!validateForm()) {
       return;
     }
-
+  
     dispatch(setPassengerInformation(passengerInfo));
-
+  
     const orderCreate = {
       orderId: 0,
       userId: currentUser?.ID || null,
@@ -158,7 +158,7 @@ const UserInformation = () => {
       }),
     };
     console.log("Order Data:", orderCreate);
-
+  
     try {
       const orderResponse = await createOrder(orderCreate);
       console.log("Order Response:", orderResponse); // Log the order response for debugging
@@ -168,8 +168,13 @@ const UserInformation = () => {
       setMessage(message);
       setMessageType(isSuccess ? "success" : "error");
       if (isSuccess) {
+        const rankMatch = message.match(/rank is (\w+)/);
+        const discountMatch = message.match(/discount is (\d+)%/);
+        const rank = rankMatch ? rankMatch[1] : "Unknown";
+        const discount = discountMatch ? parseInt(discountMatch[1], 10) : 0;
+  
         dispatch(setOrderId(orderResponse.data.orderId));
-        navigate("/checkout", { state: { order: orderResponse.result } });
+        navigate("/checkout", { state: { order: orderResponse.result, rank, discount } });
       }
     } catch (error) {
       console.error("Error creating order:", error);

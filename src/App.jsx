@@ -31,9 +31,8 @@ import PasswordReset from "./pages/ForgotPassword/ResetPassword";
 import FlightReportPage from "./pages/FlightReport/FlightReportPage";
 import VerifyUserPage from "./pages/Verification/VerifyUser";
 import 'firebase/auth';
-import {firebaseConfig, app} from './firebase';
 
-app
+
 function App() {
   const navigate = useNavigate();
   const location = useLocation();

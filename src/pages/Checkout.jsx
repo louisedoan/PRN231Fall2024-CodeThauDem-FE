@@ -1,9 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { createPaymentUrl } from "../lib/api/Payment";
 
 const Checkout = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { rank, discount } = location.state || {};
   const passengerInformation = useSelector((state) => state.bookings.passengerInformation);
   const flightBooking = useSelector((state) => state.bookings.flightBooking);
   const returnFlightBooking = useSelector((state) => state.bookings.returnFlightBooking);
@@ -11,7 +14,6 @@ const Checkout = () => {
   const returnFlightSeatBooking = useSelector((state) => state.bookings.returnFlightSeatBooking);
   const orderId = useSelector((state) => state.bookings.orderId);
   const isRoundTrip = !!returnFlightBooking.flightId;
-  
 
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
@@ -22,7 +24,7 @@ const Checkout = () => {
     const year = date.getFullYear();
     return `${hours}:${minutes} ${day}/${month}/${year}`;
   };
-console.log(isRoundTrip);
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
@@ -31,6 +33,10 @@ console.log(isRoundTrip);
     const goTicketPrice = flightSeatBooking.reduce((total, seat) => total + seat.price, 0);
     const returnTicketPrice = isRoundTrip ? returnFlightSeatBooking.reduce((total, seat) => total + seat.price, 0) : 0;
     return goTicketPrice + returnTicketPrice;
+  };
+
+  const calculateDiscountedPrice = (totalPrice, discount) => {
+    return totalPrice - (totalPrice * discount / 100);
   };
 
   const handlePurchase = async () => {
@@ -47,6 +53,22 @@ console.log(isRoundTrip);
       alert("Failed to create payment URL. Please try again.");
     }
   };
+
+  const getRankColor = (rank) => {
+    switch (rank) {
+      case 'Bronze':
+        return 'text-brown-500';
+      case 'Silver':
+        return 'text-gray-500';
+      case 'Gold':
+        return 'text-yellow-500';
+      default:
+        return 'text-gray-700';
+    }
+  };
+
+  const totalPrice = calculateTotalPrice();
+  const discountedPrice = calculateDiscountedPrice(totalPrice, discount);
 
   return (
     <div className="checkout-container max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -110,8 +132,14 @@ console.log(isRoundTrip);
                 <p><strong>Return Ticket:</strong> {formatPrice(returnFlightSeatBooking.reduce((total, seat) => total + seat.price, 0))}</p>
               )}
             </div>
+            <h2 className="text-xl font-semibold text-gray-900 mt-4">Discounted</h2>
+            <div className="flex justify-between text-gray-700 space-x-2">
+              <p className={getRankColor(rank)}>Rank: {rank}</p>
+              <p>Discount: {discount}%</p>
+            </div>
             <h2 className="text-xl font-semibold text-gray-900 mt-4">Total Price</h2>
-            <p className="text-gray-700">{formatPrice(calculateTotalPrice())}</p>
+            <p className="text-gray-700">{formatPrice(discountedPrice)}</p>
+
           </div>
 
           <button
