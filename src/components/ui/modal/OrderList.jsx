@@ -12,11 +12,15 @@ export default function OrderList({ orders, onViewDetails }) {
 
   const handleCancelOrder = async (orderId) => {
     try {
-      const response = await axios.put(`/api/v1/order/cancel/${orderId}`);
-      alert(response.data.message);
+      const response = await axios.put(
+        `/api/v1/orderdetails/cancel/${orderId}`
+      );
+      console.log(response);
+
+      alert(response);
       window.location.reload();
     } catch (error) {
-      alert("Lỗi khi hủy vé: " + error.response.data.message);
+      alert("Lỗi khi hủy vé");
     }
   };
 
@@ -91,14 +95,6 @@ export default function OrderList({ orders, onViewDetails }) {
                     onClick={() => handlePaymentClick(order)}
                   >
                     Thanh Toán
-                  </button>
-                )}
-                {order.status === "Success" && (
-                  <button
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                    onClick={() => handleCancelOrder(order.orderId)}
-                  >
-                    Hủy Vé
                   </button>
                 )}
               </td>
