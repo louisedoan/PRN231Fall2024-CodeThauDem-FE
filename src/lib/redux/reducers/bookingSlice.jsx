@@ -10,7 +10,9 @@ const bookingSlice = createSlice({
       total: 0,
     },
     flightBooking: {},
+    returnFlightBooking: {}, // Add this line
     flightSeatBooking: [],
+    returnFlightSeatBooking: [], // Add this line
     passengerInformation: [],
   },
   reducers: {
@@ -22,8 +24,16 @@ const bookingSlice = createSlice({
       state.flightBooking = action.payload;
     },
 
+    setReturnFlight: (state, action) => { // Add this reducer
+      state.returnFlightBooking = action.payload;
+    },
+
     setSeat: (state, action) => {
       state.flightSeatBooking = action.payload;
+    },
+
+    setReturnSeat: (state, action) => { // Add this reducer
+      state.returnFlightSeatBooking = action.payload;
     },
 
     setPassengerInformation: (state, action) => {
@@ -38,7 +48,9 @@ const bookingSlice = createSlice({
 export const {
   setPassenger,
   setFlight,
+  setReturnFlight, // Add this export
   setSeat,
+  setReturnSeat, // Add this export
   setPassengerInformation,
   setOrderId,
 } = bookingSlice.actions;
