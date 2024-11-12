@@ -1,16 +1,17 @@
 import { IconPlane } from "@tabler/icons-react";
 import ActionStatus from "../../../components/ui/Status";
+import { ReportDetailModal } from "../ReportDetailModal";
 
 export const ReportSection = ({
   paymentStatus,
-  flightId,
-  planeCode,
+  seatNumber,
   flightNumber,
   departureLocationName,
   arrivalLocationName,
   arrivalTime,
   departureTime,
   flightStatus,
+  detailBtn
 }) => {
   const getHours = (dateTime) => {
     const date = new Date(dateTime);
@@ -30,6 +31,7 @@ export const ReportSection = ({
             <div className="flex flex-col items-center gap-4">
               <p>Payment status</p>
               <ActionStatus status={paymentStatus} />
+              {detailBtn}
             </div>
           </div>
           <div className="relative h-full flex flex-col items-center border-dashed justify-between border-2 bg-zinc-900 border-zinc-50">
@@ -58,6 +60,10 @@ export const ReportSection = ({
               </span>
             </div>
             <div className="flex w-full mt-auto justify-between items-center">
+              <span className="flex flex-col">
+                <p className="text-xs text-zinc-400">Seat Number</p>
+                <p className="font-mono">{seatNumber}</p>
+              </span>
               <span className="flex flex-col">
                 <p className="text-xs text-zinc-400">Departure date</p>
                 <p className="font-mono">{getHours(departureTime)}</p>
