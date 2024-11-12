@@ -11,9 +11,14 @@ const PassengerControl = ({
 }) => {
   const [isPassengerDropdownOpen, setIsPassengerDropdownOpen] = useState(false);
   const passengerDropdownRef = useRef(null);
+  const maxTotalTickets = 10;
 
-  // Tăng/giảm số lượng hành khách
+  // Calculate total tickets
+  const totalTickets = adultCount + childCount + infantCount;
+
   const handleIncrement = (type) => {
+    if (totalTickets >= maxTotalTickets) return; // Prevent increment if total is 10 or more
+
     switch (type) {
       case "adult":
         setAdultCount(adultCount + 1);
@@ -45,12 +50,10 @@ const PassengerControl = ({
     }
   };
 
-  // Xử lý khi nhấn vào ô chọn hành khách
   const togglePassengerDropdown = () => {
     setIsPassengerDropdownOpen(!isPassengerDropdownOpen);
   };
 
-  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -70,7 +73,9 @@ const PassengerControl = ({
   return (
     <div className="relative w-full mb-4" ref={passengerDropdownRef}>
       <div
-        className="w-full flex items-center border-2 border-black rounded-2xl p-4 cursor-pointer"
+        className={`w-full flex items-center border-2 ${
+          isPassengerDropdownOpen ? "border-yellow-500" : "border-gray-300"
+        } rounded-2xl p-4 cursor-pointer transition duration-300`}
         onClick={togglePassengerDropdown}
       >
         <FaUser size={25} />
@@ -83,7 +88,7 @@ const PassengerControl = ({
       </div>
 
       {isPassengerDropdownOpen && (
-        <div className="absolute top-full left-0 w-full bg-white border border-black rounded-b-2xl z-20 p-4">
+        <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-b-2xl z-20 p-4 shadow-lg">
           {/* Người lớn */}
           <div className="flex items-center justify-between mb-2">
             <div>
@@ -92,15 +97,17 @@ const PassengerControl = ({
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="border-2 border-black w-8 h-8 flex items-center justify-center rounded"
+                className="border-2 border-gray-300 w-8 h-8 flex items-center justify-center rounded shadow-sm transition duration-200"
                 onClick={() => handleDecrement("adult")}
+                disabled={adultCount <= 1}
               >
                 -
               </button>
               <span>{adultCount}</span>
               <button
-                className="border-2 border-black w-8 h-8 flex items-center justify-center rounded"
+                className="border-2 border-gray-300 w-8 h-8 flex items-center justify-center rounded shadow-sm transition duration-200"
                 onClick={() => handleIncrement("adult")}
+                disabled={totalTickets >= maxTotalTickets}
               >
                 +
               </button>
@@ -115,15 +122,17 @@ const PassengerControl = ({
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="border-2 border-black w-8 h-8 flex items-center justify-center rounded"
+                className="border-2 border-gray-300 w-8 h-8 flex items-center justify-center rounded shadow-sm transition duration-200"
                 onClick={() => handleDecrement("child")}
+                disabled={childCount <= 0}
               >
                 -
               </button>
               <span>{childCount}</span>
               <button
-                className="border-2 border-black w-8 h-8 flex items-center justify-center rounded"
+                className="border-2 border-gray-300 w-8 h-8 flex items-center justify-center rounded shadow-sm transition duration-200"
                 onClick={() => handleIncrement("child")}
+                disabled={totalTickets >= maxTotalTickets}
               >
                 +
               </button>
@@ -138,15 +147,17 @@ const PassengerControl = ({
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="border-2 border-black w-8 h-8 flex items-center justify-center rounded"
+                className="border-2 border-gray-300 w-8 h-8 flex items-center justify-center rounded shadow-sm transition duration-200"
                 onClick={() => handleDecrement("infant")}
+                disabled={infantCount <= 0}
               >
                 -
               </button>
               <span>{infantCount}</span>
               <button
-                className="border-2 border-black w-8 h-8 flex items-center justify-center rounded"
+                className="border-2 border-gray-300 w-8 h-8 flex items-center justify-center rounded shadow-sm transition duration-200"
                 onClick={() => handleIncrement("infant")}
+                disabled={totalTickets >= maxTotalTickets}
               >
                 +
               </button>
