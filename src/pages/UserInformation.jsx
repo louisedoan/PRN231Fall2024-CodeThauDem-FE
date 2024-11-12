@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setPassengerInformation, setOrderId } from "../lib/redux/reducers/bookingSlice";
+import {
+  setPassengerInformation,
+  setOrderId,
+} from "../lib/redux/reducers/bookingSlice";
 import { createOrder } from "../lib/api/Order";
 
 const UserInformation = () => {
-  const totalPassengers = useSelector((state) => state.bookings.passengerBooking.total);
+  const totalPassengers = useSelector(
+    (state) => state.bookings.passengerBooking.total
+  );
   const flightBooking = useSelector((state) => state.bookings.flightBooking);
-  const flightSeatBooking = useSelector((state) => state.bookings.flightSeatBooking);
+  const flightSeatBooking = useSelector(
+    (state) => state.bookings.flightSeatBooking
+  );
   const currentUser = useSelector((state) => state.users.currentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -41,7 +48,10 @@ const UserInformation = () => {
       userId: currentUser?.ID || null,
       orderDate: new Date().toISOString(),
       status: "Pending",
-      totalPrice: flightSeatBooking.reduce((total, seat) => total + seat.price, 0),
+      totalPrice: flightSeatBooking.reduce(
+        (total, seat) => total + seat.price,
+        0
+      ),
       orderDetails: passengerInfo.map((passenger, index) => ({
         orderDetailId: 0,
         name: passenger.name,
@@ -53,6 +63,7 @@ const UserInformation = () => {
         seatId: flightSeatBooking[index].seatId,
         status: "Pending",
         totalAmount: flightSeatBooking[index].price,
+        ticketCode: "",
       })),
       passengers: passengerInfo.map((passenger, index) => ({
         name: passenger.name,
@@ -71,7 +82,8 @@ const UserInformation = () => {
       const orderResponse = await createOrder(orderCreate);
       console.log("Order Response:", orderResponse); // Log the order response for debugging
       const isSuccess = orderResponse.isSuccess || false;
-      const message = orderResponse.message || "Failed to create order. Please try again.";
+      const message =
+        orderResponse.message || "Failed to create order. Please try again.";
       setMessage(message);
       setMessageType(isSuccess ? "success" : "error");
       if (isSuccess) {
@@ -120,7 +132,9 @@ const UserInformation = () => {
 
           {/* Date of Birth */}
           <div className="mb-6">
-            <label className="block mb-2 font-semibold">Date of Birth (DD/MM/YYYY)*</label>
+            <label className="block mb-2 font-semibold">
+              Date of Birth (DD/MM/YYYY)*
+            </label>
             <input
               type="date"
               className="w-full border border-gray-300 p-2 rounded"
@@ -139,7 +153,9 @@ const UserInformation = () => {
               placeholder="Nationality"
               className="w-full border border-gray-300 p-2 rounded"
               value={passengerInfo[index].nationality}
-              onChange={(e) => handleInputChange(index, "nationality", e.target.value)}
+              onChange={(e) =>
+                handleInputChange(index, "nationality", e.target.value)
+              }
             />
           </div>
 
@@ -151,7 +167,9 @@ const UserInformation = () => {
               placeholder="Email"
               className="w-full border border-gray-300 p-2 rounded"
               value={passengerInfo[index].email}
-              onChange={(e) => handleInputChange(index, "email", e.target.value)}
+              onChange={(e) =>
+                handleInputChange(index, "email", e.target.value)
+              }
             />
           </div>
         </div>
