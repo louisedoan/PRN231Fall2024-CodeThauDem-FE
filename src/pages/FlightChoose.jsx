@@ -67,7 +67,7 @@ const FlightChoose = () => {
     fetchFlights();
   }, [selectedFlightDetails, navigate]);
 
-  const handleSelectFlight = (flight, classType) => {
+  const handleSelectFlight = (flight) => {
     const flightBookingDetails = {
       flightId: flight.flightId,
       flightNumber: flight.flightNumber,
@@ -75,14 +75,16 @@ const FlightChoose = () => {
       departureTime: flight.departureTime,
       arrivalLocation: flight.arrivalLocationName,
       arrivalTime: flight.arrivalTime,
-      classType: classType,
+      classType: flight.availableBusinessSeats > 0 ? "Business" : "Economy",
       price:
-        classType === "Business" ? flight.businessPrice : flight.economyPrice,
+        flight.availableBusinessSeats > 0
+          ? flight.businessPrice
+          : flight.economyPrice,
     };
 
     dispatch(setFlight(flightBookingDetails));
     navigate("/flight-seat", {
-      state: { flightId: flight.flightId, classType },
+      state: { flightId: flight.flightId, classType: flightBookingDetails.classType },
     });
   };
 
@@ -156,13 +158,6 @@ const FlightChoose = () => {
                 <p className="text-sm text-gray-600">
                   Available: {flight.availableBusinessSeats}
                 </p>
-                <button
-                  className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => handleSelectFlight(flight, "Business")}
-                  disabled={flight.availableBusinessSeats === 0}
-                >
-                  Choose
-                </button>
               </div>
 
               <div className="border p-4 rounded-lg">
@@ -173,16 +168,16 @@ const FlightChoose = () => {
                 <p className="text-sm text-gray-600">
                   Available: {flight.availableEconomySeats}
                 </p>
-                <button
-                  className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => handleSelectFlight(flight, "Economy")}
-                  disabled={flight.availableEconomySeats === 0}
-                >
-                  Choose
-                </button>
               </div>
             </div>
           </div>
+          <button
+            className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            onClick={() => handleSelectFlight(flight)}
+            disabled={flight.availableBusinessSeats === 0 && flight.availableEconomySeats === 0}
+          >
+            Choose
+          </button>
         </div>
       ))}
     </div>
