@@ -11,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import PassengerControl from "./PassengerControl";
 import { useNavigate } from "react-router-dom";
 import { setPassenger } from "../../../lib/redux/reducers/bookingSlice";
-
+import "./customDatePicker.css";
 const FlightBookingForm = () => {
   const [isRoundTrip, setIsRoundTrip] = useState(true);
   const [isDepartureDropdownOpen, setIsDepartureDropdownOpen] = useState(false);
@@ -24,7 +24,7 @@ const FlightBookingForm = () => {
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
   const [errors, setErrors] = useState({});
-
+  const today = new Date();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const flights = useSelector((state) => state.flights.flightList?.data || []);
@@ -141,7 +141,6 @@ const FlightBookingForm = () => {
     dispatch(setSelectedFlightDetails(selectedFlightDetails));
     navigate("/flight-choose");
 
-    
     // Dispatch the passenger booking details
     const passengerBooking = {
       adults: adultCount,
@@ -245,8 +244,9 @@ const FlightBookingForm = () => {
             <DatePicker
               selected={departureDate}
               onChange={(date) => setDepartureDate(date)}
+              minDate={today}
               dateFormat="dd/MM/yyyy"
-              className="w-full outline-none bg-transparent"
+              className="w-full outline-none bg-transparent custom-datepicker"
               placeholderText="Select departure date"
             />
           </div>
@@ -320,6 +320,7 @@ const FlightBookingForm = () => {
               <DatePicker
                 selected={returnDate}
                 onChange={(date) => setReturnDate(date)}
+                minDate={departureDate || today}
                 dateFormat="dd/MM/yyyy"
                 className="w-full outline-none bg-transparent"
                 placeholderText="Select return date"
