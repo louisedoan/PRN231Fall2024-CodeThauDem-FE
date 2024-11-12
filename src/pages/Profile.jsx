@@ -59,6 +59,14 @@ const Profile = () => {
 
   // Hàm xử lý cập nhật thông tin người dùng
   const handleUpdate = async () => {
+    const dobYear = new Date(profileData.dob).getFullYear();
+
+    // Kiểm tra nếu năm sinh không nằm trong khoảng từ 1945 đến 2015
+    if (dobYear < 1945 || dobYear > 2015) {
+      setError("Ngày sinh phải nằm trong khoảng từ 1945 đến 2015.");
+      return;
+    }
+
     const updatedProfileData = {
       userId: user.userId,
       email: user.email,
@@ -96,18 +104,14 @@ const Profile = () => {
       const updatedUser = await updateUser(updatedProfileData); // Gọi API để cập nhật
       console.log("Updated User:", updatedUser);
 
-      // Kiểm tra nếu dữ liệu trả về có hợp lệ không
       if (!updatedUser || !updatedUser.data) {
         throw new Error("Invalid data received from API");
       }
 
-      // Hiển thị thông báo thành công
       alert("Profile updated successfully!");
-
-      // Tải lại thông tin người dùng sau khi cập nhật thành công
-      const userId = updatedUser.data.userId || currentUser?.ID; // Sử dụng userId từ phản hồi API hoặc từ Redux
+      const userId = updatedUser.data.userId || currentUser?.ID;
       if (userId) {
-        await getUserData(userId); // Gọi lại API để lấy thông tin người dùng mới nhất
+        await getUserData(userId);
       }
     } catch (err) {
       setError(err.message);
@@ -149,7 +153,7 @@ const Profile = () => {
               Password
             </label>
             <input
-              type={showPassword ? "text" : "password"} // Kiểm tra trạng thái để thay đổi loại input
+              type={showPassword ? "text" : "password"}
               value={profileData.password}
               onChange={(e) =>
                 setProfileData({ ...profileData, password: e.target.value })
@@ -161,8 +165,7 @@ const Profile = () => {
               onClick={toggleShowPassword}
               className="absolute inset-y-0 right-4 flex items-center"
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}{" "}
-              {/* Icon hiển thị/ẩn */}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
 
@@ -251,12 +254,15 @@ const Profile = () => {
             </label>
             <input
               type="text"
-              value={profileData.rank} // Hiển thị rank từ profileData
+              value={profileData.rank}
               disabled
               className="block w-2/3 p-3 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
             />
           </div>
         </div>
+
+        {/* Hiển thị lỗi nếu có */}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button
           onClick={handleUpdate}
