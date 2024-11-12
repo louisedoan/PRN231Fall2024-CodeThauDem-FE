@@ -66,11 +66,11 @@ const UserMenu = ({ currentUser }) => {
                     label="Dashboard"
                     icon={<MdDashboard size={20} />}
                   />
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => {}}
                     label="Notifications"
                     icon={<IoMdNotifications size={20} />}
-                  />
+                  /> */}
                   <MenuItem
                     onClick={handleLogout}
                     label="Log out"
@@ -85,12 +85,12 @@ const UserMenu = ({ currentUser }) => {
                     label="Dashboard"
                     icon={<MdDashboard size={20} />}
                   />
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => {}}
                     closeMenu={closeMenu}
                     label="Notifications"
                     icon={<IoMdNotifications size={20} />}
-                  />
+                  /> */}
                   <MenuItem
                     onClick={handleLogout}
                     closeMenu={closeMenu}
@@ -112,18 +112,18 @@ const UserMenu = ({ currentUser }) => {
                     label="My history"
                     icon={<FaHistory size={20} />}
                   />
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => {}}
                     closeMenu={closeMenu}
                     label="Notifications"
                     icon={<IoMdNotifications size={20} />}
-                  />
-                  <MenuItem
+                  /> */}
+                  {/* <MenuItem
                     onClick={() => {}}
                     closeMenu={closeMenu}
                     label="Settings"
                     icon={<IoIosSettings size={20} />}
-                  />
+                  /> */}
                   <MenuItem
                     onClick={handleLogout}
                     closeMenu={closeMenu}
