@@ -1,13 +1,15 @@
 import Container from "../components/ui/Container";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { searchOneWayFlight } from "../lib/api/Flight";
-import { setFlight } from "../lib/redux/reducers/bookingSlice";
+import { useNavigate, useLocation } from "react-router-dom";
+import { searchOneWayFlight, searchReturnFlight } from "../lib/api/Flight";
+import { setFlight, setReturnFlight } from "../lib/redux/reducers/bookingSlice";
 
 const FlightChoose = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { isReturnFlight } = location.state || {};
   const selectedFlightDetails = useSelector(
     (state) => state.flights.selectedFlightDetails
   );
@@ -21,7 +23,7 @@ const FlightChoose = () => {
       !selectedFlightDetails.departureLocation ||
       !selectedFlightDetails.arrivalLocation
     ) {
-      // Nếu không có thông tin chuyến bay, quay lại trang đặt chuyến bay
+      // If no flight details, navigate back to booking form
       navigate("/");
       return;
     }
@@ -31,30 +33,16 @@ const FlightChoose = () => {
         setLoading(true);
         const departureLocation = selectedFlightDetails.departureLocation;
         const arrivalLocation = selectedFlightDetails.arrivalLocation;
-        const departureDate = selectedFlightDetails.departureDate
-          ? new Date(selectedFlightDetails.departureDate)
-              .toISOString()
-              .split("T")[0]
-          : null;
-        const returnDate =
-          selectedFlightDetails.isRoundTrip && selectedFlightDetails.returnDate
-            ? new Date(selectedFlightDetails.returnDate)
-                .toISOString()
-                .split("T")[0]
-            : null;
+        const departureDate = selectedFlightDetails.departureDate;
+        const returnDate = selectedFlightDetails.returnDate;
 
-        // Log parameters to debug
-        console.log("Fetching flights with params:", {
-          departureLocation,
-          arrivalLocation,
-          departureDate,
-        });
+        let data;
+        if (isReturnFlight) {
+          data = await searchReturnFlight(arrivalLocation, departureLocation, returnDate);
+        } else {
+          data = await searchOneWayFlight(departureLocation, arrivalLocation, departureDate);
+        }
 
-        const data = await searchOneWayFlight(
-          departureLocation,
-          arrivalLocation,
-          departureDate
-        );
         setFlights(data);
       } catch (error) {
         console.error("Error fetching flights:", error);
@@ -65,9 +53,9 @@ const FlightChoose = () => {
     };
 
     fetchFlights();
-  }, [selectedFlightDetails, navigate]);
+  }, [selectedFlightDetails, isReturnFlight, navigate]);
 
-  const handleSelectFlight = (flight, classType) => {
+  const handleSelectFlight = (flight) => {
     const flightBookingDetails = {
       flightId: flight.flightId,
       flightNumber: flight.flightNumber,
@@ -75,15 +63,24 @@ const FlightChoose = () => {
       departureTime: flight.departureTime,
       arrivalLocation: flight.arrivalLocationName,
       arrivalTime: flight.arrivalTime,
-      classType: classType,
+      classType: flight.availableBusinessSeats > 0 ? "Business" : "Economy",
       price:
-        classType === "Business" ? flight.businessPrice : flight.economyPrice,
+        flight.availableBusinessSeats > 0
+          ? flight.businessPrice
+          : flight.economyPrice,
     };
 
-    dispatch(setFlight(flightBookingDetails));
-    navigate("/flight-seat", {
-      state: { flightId: flight.flightId, classType },
-    });
+    if (isReturnFlight) {
+      dispatch(setReturnFlight(flightBookingDetails));
+      navigate("/flight-seat", {
+        state: { flightId: flight.flightId, classType: flightBookingDetails.classType, isReturnFlight: true },
+      });
+    } else {
+      dispatch(setFlight(flightBookingDetails));
+      navigate("/flight-seat", {
+        state: { flightId: flight.flightId, classType: flightBookingDetails.classType, isReturnFlight: false },
+      });
+    }
   };
 
   if (loading) {
@@ -97,28 +94,28 @@ const FlightChoose = () => {
   return (
     <div className="container h-full overflow-y-auto px-24">
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6">
-        Chọn chuyến bay
+        Choose Your Flight
       </h2>
 
-      {/* Hàng tiêu đề */}
+      {/* Header row */}
       <div className="grid grid-cols-3 gap-2 bg-white shadow-lg rounded-lg p-4 mb-6">
-        {/* Cột 1 chiếm 1/3 không có nội dung */}
+        {/* Column 1 takes 1/3 with no content */}
         <div className="col-span-1"></div>
 
         <div className="col-span-2 grid grid-cols-2 gap-4 text-center font-semibold text-gray-600">
-          <div>Từ: {selectedFlightDetails.departureLocation.location}</div>
-          <div>Đến: {selectedFlightDetails.arrivalLocation.location}</div>
+          <div>From: {selectedFlightDetails.departureLocation.location}</div>
+          <div>To: {selectedFlightDetails.arrivalLocation.location}</div>
         </div>
       </div>
 
-      {/* Danh sách các chuyến bay */}
+      {/* Flight list */}
       {flights.map((flight) => (
         <div
           key={flight.flightId} // Ensure each child has a unique key
           className="bg-white shadow-lg rounded-xl p-6 mb-6 transition-transform transform hover:scale-105 hover:shadow-2xl"
         >
           <div className="grid grid-cols-3 gap-2">
-            {/* Cột thông tin thời gian */}
+            {/* Time information column */}
             <div className="col-span-1 pr-4">
               <div className="mb-4">
                 <h3 className="text-lg font-bold text-blue-600">
@@ -156,13 +153,6 @@ const FlightChoose = () => {
                 <p className="text-sm text-gray-600">
                   Available: {flight.availableBusinessSeats}
                 </p>
-                <button
-                  className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => handleSelectFlight(flight, "Business")}
-                  disabled={flight.availableBusinessSeats === 0}
-                >
-                  Choose
-                </button>
               </div>
 
               <div className="border p-4 rounded-lg">
@@ -173,16 +163,16 @@ const FlightChoose = () => {
                 <p className="text-sm text-gray-600">
                   Available: {flight.availableEconomySeats}
                 </p>
-                <button
-                  className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => handleSelectFlight(flight, "Economy")}
-                  disabled={flight.availableEconomySeats === 0}
-                >
-                  Choose
-                </button>
               </div>
             </div>
           </div>
+          <button
+            className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            onClick={() => handleSelectFlight(flight)}
+            disabled={flight.availableBusinessSeats === 0 && flight.availableEconomySeats === 0}
+          >
+            {isReturnFlight ? "Choose Return Flight" : "Continue"}
+          </button>
         </div>
       ))}
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAllSeats } from "../lib/api/Seat";
 import { useSelector, useDispatch } from "react-redux";
-import { setSeat } from "../lib/redux/reducers/bookingSlice";
+import { setSeat, setReturnSeat } from "../lib/redux/reducers/bookingSlice"; // Import setReturnSeat
 import Button from "../components/ui/Button";
 
 const FlightSeat = () => {
@@ -10,8 +10,10 @@ const FlightSeat = () => {
   const [seats, setSeats] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const { flightId } = location.state;
+  const { flightId, isReturnFlight } = location.state; // Add isReturnFlight
 
+  const selectedFlightDetails = useSelector((state) => state.flights.selectedFlightDetails);
+  const isRoundTrip = selectedFlightDetails.isRoundTrip;
   const totalPassengers = useSelector((state) => state.bookings.passengerBooking.total);
   const dispatch = useDispatch();
 
@@ -72,8 +74,17 @@ const FlightSeat = () => {
       alert(`Please select exactly ${totalPassengers} seats.`);
       return;
     }
-    dispatch(setSeat(selectedSeats));
-    navigate("/user-information");
+    if (isReturnFlight) {
+      dispatch(setReturnSeat(selectedSeats));
+      navigate("/user-information");
+    } else {
+      dispatch(setSeat(selectedSeats));
+      if (isRoundTrip) {
+        navigate("/flight-choose", { state: { isReturnFlight: true } });
+      } else {
+        navigate("/user-information");
+      }
+    }
   };
 
   return (
@@ -118,7 +129,7 @@ const FlightSeat = () => {
         </div>
         <div className="flex justify-center mt-3">
           <Button
-            label="Continue"
+            label={!isRoundTrip ? "Continue" : isReturnFlight ? "Continue" : "Choose Return Flight"} // Change button label
             onClick={handleNextClick}
             containerStyles="hover:no-underline hover:rounded-tl-3xl hover:rounded-br-2xl hover:bg-secondary transition-all duration-100 ease-out clickable flex items-center whitespace-nowrap justify-center font-semibold p-3 sm-bold-caps gap-x-2 border border-primary
                     hover:text-black hover:border-primary

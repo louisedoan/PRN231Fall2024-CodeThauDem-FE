@@ -139,7 +139,7 @@ const FlightBookingForm = () => {
     };
 
     dispatch(setSelectedFlightDetails(selectedFlightDetails));
-    navigate("/flight-choose");
+    navigate("/flight-choose", { state: { isReturnFlight: !isRoundTrip } });
 
     // Dispatch the passenger booking details
     const passengerBooking = {
