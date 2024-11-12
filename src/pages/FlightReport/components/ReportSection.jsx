@@ -65,16 +65,16 @@ export const ReportSection = ({
                 <p className="font-mono">{seatNumber}</p>
               </span>
               <span className="flex flex-col">
-                <p className="text-xs text-zinc-400">Departure date</p>
+                <p className="text-xs text-zinc-400">Departure time</p>
                 <p className="font-mono">{getHours(departureTime)}</p>
               </span>
               <span className="flex flex-col">
-                <p className="text-xs text-zinc-400">Arrival date</p>
+                <p className="text-xs text-zinc-400">Arrival time</p>
                 <p className="font-mono">{getHours(arrivalTime)}</p>
               </span>
               <span className="flex flex-col">
                 <p className="text-xs text-zinc-400">Date</p>
-                <p className="font-mono">{getDate(arrivalTime)}</p>
+                <p className="font-mono">{getDate(departureTime)}</p>
               </span>
               <span className="flex flex-col gap-3">
                 <p className="text-xs text-zinc-400 ml-3">Flight Status</p>

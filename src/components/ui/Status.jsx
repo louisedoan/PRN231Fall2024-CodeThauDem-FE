@@ -15,7 +15,7 @@ const ActionStatus = ({ status }) => {
       statusClass = "bg-blue-500";
       label = "Available";
       break;
-    case "Canceled":
+    case "Cancel":
       statusClass = "bg-red-500";
       label = "Canceled";
     break;
