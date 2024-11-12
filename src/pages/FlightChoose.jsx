@@ -38,15 +38,23 @@ const FlightChoose = () => {
 
         let data;
         if (isReturnFlight) {
-          data = await searchReturnFlight(arrivalLocation, departureLocation, returnDate);
+          data = await searchReturnFlight(
+            arrivalLocation,
+            departureLocation,
+            returnDate
+          );
         } else {
-          data = await searchOneWayFlight(departureLocation, arrivalLocation, departureDate);
+          data = await searchOneWayFlight(
+            departureLocation,
+            arrivalLocation,
+            departureDate
+          );
         }
 
         setFlights(data);
       } catch (error) {
         console.error("Error fetching flights:", error);
-        setError("An error occurred while fetching flight data.");
+        setError("No Flight Found");
       } finally {
         setLoading(false);
       }
@@ -73,12 +81,20 @@ const FlightChoose = () => {
     if (isReturnFlight) {
       dispatch(setReturnFlight(flightBookingDetails));
       navigate("/flight-seat", {
-        state: { flightId: flight.flightId, classType: flightBookingDetails.classType, isReturnFlight: true },
+        state: {
+          flightId: flight.flightId,
+          classType: flightBookingDetails.classType,
+          isReturnFlight: true,
+        },
       });
     } else {
       dispatch(setFlight(flightBookingDetails));
       navigate("/flight-seat", {
-        state: { flightId: flight.flightId, classType: flightBookingDetails.classType, isReturnFlight: false },
+        state: {
+          flightId: flight.flightId,
+          classType: flightBookingDetails.classType,
+          isReturnFlight: false,
+        },
       });
     }
   };
@@ -169,7 +185,10 @@ const FlightChoose = () => {
           <button
             className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
             onClick={() => handleSelectFlight(flight)}
-            disabled={flight.availableBusinessSeats === 0 && flight.availableEconomySeats === 0}
+            disabled={
+              flight.availableBusinessSeats === 0 &&
+              flight.availableEconomySeats === 0
+            }
           >
             {isReturnFlight ? "Choose Return Flight" : "Continue"}
           </button>
