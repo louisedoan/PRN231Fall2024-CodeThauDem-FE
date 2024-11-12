@@ -7,6 +7,7 @@ const FlightReportPage = () => {
   const [flightReports, setFlightReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(5);
 
   useEffect(() => {
     const fetchFlightReports = async () => {
@@ -14,7 +15,10 @@ const FlightReportPage = () => {
       const response = await GetAllFlightReport();
       console.log(response);
       if (!response.error) {
-        setFlightReports(response.data);
+        const sortedReports = response.data.sort(
+          (a, b) => new Date(b.departureTime) - new Date(a.departureTime)
+        );
+        setFlightReports(sortedReports);
       }
       setLoading(false);
     };
@@ -29,7 +33,7 @@ const FlightReportPage = () => {
         <h1 className="text-2xl font-semibold my-5">Flight Report</h1>
       </div>
 
-      {flightReports.map((report) => (
+      {flightReports.slice(0, visibleCount).map((report) => (
         <div
           key={report.orderId}
         >
@@ -49,6 +53,17 @@ const FlightReportPage = () => {
           />
         </div>
       ))}
+
+      {visibleCount < flightReports.length && (
+        <div className="flex justify-center mt-5">
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+            onClick={() => setVisibleCount(visibleCount + 5)}
+          >
+            Show More
+          </button>
+        </div>
+      )}
 
       {/* Render modal with the selected orderId */}
       <div className="hidden">
