@@ -29,6 +29,7 @@ export default function OrderDetail({ order, onBack }) {
       const response = await axios.put(
         `/api/v1/orderdetails/cancel/${selectedTicketId}`
       );
+      console.log(response);
       if (response.status === 200) {
         alert("Vé đã được hủy thành công.");
         window.location.reload();
@@ -51,7 +52,7 @@ export default function OrderDetail({ order, onBack }) {
     setShowConfirmModal(false);
     setSelectedTicketId(null);
   };
-  console.log(order.orderDetails);
+
   return (
     <div className="container mx-auto px-4 py-6">
       <h2 className="text-2xl font-bold mb-4 text-center">
