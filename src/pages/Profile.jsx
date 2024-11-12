@@ -128,11 +128,6 @@ const Profile = () => {
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
           My Profile
         </h2>
-        <div className="mb-6 text-center">
-          <p className="text-lg font-semibold text-blue-600">
-            Account balance: {walletBalance.toLocaleString()} VND
-          </p>
-        </div>
         <div className="grid grid-cols-2 gap-6">
           {/* Email */}
           <div className="flex items-center">

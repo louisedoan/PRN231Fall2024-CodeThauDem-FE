@@ -8,21 +8,36 @@ import {
 import { createOrder } from "../lib/api/Order";
 const countries = [
   "VietNam",
-  "America", "Japan"
+  "America",
+  "Japan",
+  "China",
+  "Russia",
+  "Germany",
+  "France",
+  "UnitedKingdom",
+  "India",
+  "Brazil",
+  "Canada",
+  "Australia",
 ];
+
 const UserInformation = () => {
   const totalPassengers = useSelector(
     (state) => state.bookings.passengerBooking.total
   );
   const flightBooking = useSelector((state) => state.bookings.flightBooking);
-  const returnFlightBooking = useSelector((state) => state.bookings.returnFlightBooking);
+  const returnFlightBooking = useSelector(
+    (state) => state.bookings.returnFlightBooking
+  );
   const flightSeatBooking = useSelector(
     (state) => state.bookings.flightSeatBooking
   );
   const returnFlightSeatBooking = useSelector(
     (state) => state.bookings.returnFlightSeatBooking
   );
-  const selectedFlightDetails = useSelector((state) => state.flights.selectedFlightDetails);
+  const selectedFlightDetails = useSelector(
+    (state) => state.flights.selectedFlightDetails
+  );
   const isRoundTrip = selectedFlightDetails.isRoundTrip;
   const currentUser = useSelector((state) => state.users.currentUser);
   const dispatch = useDispatch();
@@ -61,7 +76,8 @@ const UserInformation = () => {
       } else {
         const dob = new Date(passenger.dob);
         if (dob < new Date("1900-01-01") || dob > new Date("2024-12-31")) {
-          newErrors[`dob${index}`] = "Date of birth must be between 1900 and 2024.";
+          newErrors[`dob${index}`] =
+            "Date of birth must be between 1900 and 2024.";
         }
       }
       if (!passenger.nationality) {
@@ -81,21 +97,22 @@ const UserInformation = () => {
     if (!validateForm()) {
       return;
     }
-  
+
     dispatch(setPassengerInformation(passengerInfo));
-  
+
     const orderCreate = {
       orderId: 0,
       userId: currentUser?.ID || null,
       orderDate: new Date().toISOString(),
       status: "Pending",
-      totalPrice: flightSeatBooking.reduce(
-        (total, seat) => total + seat.price,
-        0
-      ) + (isRoundTrip ? returnFlightSeatBooking.reduce(
-        (total, seat) => total + seat.price,
-        0
-      ) : 0),
+      totalPrice:
+        flightSeatBooking.reduce((total, seat) => total + seat.price, 0) +
+        (isRoundTrip
+          ? returnFlightSeatBooking.reduce(
+              (total, seat) => total + seat.price,
+              0
+            )
+          : 0),
       orderDetails: passengerInfo.flatMap((passenger, index) => {
         const details = [
           {
@@ -110,7 +127,7 @@ const UserInformation = () => {
             status: "Pending",
             totalAmount: flightSeatBooking[index].price,
             ticketCode: "",
-          }
+          },
         ];
         if (isRoundTrip) {
           details.push({
@@ -140,7 +157,7 @@ const UserInformation = () => {
             tripType: "One Way Trip",
             seatId: flightSeatBooking[index].seatId,
             price: flightSeatBooking[index].price,
-          }
+          },
         ];
         if (isRoundTrip) {
           passengers.push({
@@ -158,7 +175,7 @@ const UserInformation = () => {
       }),
     };
     console.log("Order Data:", orderCreate);
-  
+
     try {
       const orderResponse = await createOrder(orderCreate);
       console.log("Order Response:", orderResponse); // Log the order response for debugging
@@ -172,9 +189,11 @@ const UserInformation = () => {
         const discountMatch = message.match(/discount is (\d+)%/);
         const rank = rankMatch ? rankMatch[1] : "Unknown";
         const discount = discountMatch ? parseInt(discountMatch[1], 10) : 0;
-  
+
         dispatch(setOrderId(orderResponse.data.orderId));
-        navigate("/checkout", { state: { order: orderResponse.result, rank, discount } });
+        navigate("/checkout", {
+          state: { order: orderResponse.result, rank, discount },
+        });
       }
     } catch (error) {
       console.error("Error creating order:", error);
@@ -215,7 +234,9 @@ const UserInformation = () => {
               onChange={(e) => handleInputChange(index, "name", e.target.value)}
             />
             {errors[`name${index}`] && (
-              <p className="text-red-500 text-sm mt-1">{errors[`name${index}`]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors[`name${index}`]}
+              </p>
             )}
           </div>
 
@@ -233,7 +254,9 @@ const UserInformation = () => {
               max="2024-12-31"
             />
             {errors[`dob${index}`] && (
-              <p className="text-red-500 text-sm mt-1">{errors[`dob${index}`]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors[`dob${index}`]}
+              </p>
             )}
           </div>
 
@@ -255,7 +278,9 @@ const UserInformation = () => {
               ))}
             </select>
             {errors[`nationality${index}`] && (
-              <p className="text-red-500 text-sm mt-1">{errors[`nationality${index}`]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors[`nationality${index}`]}
+              </p>
             )}
           </div>
 
@@ -272,7 +297,9 @@ const UserInformation = () => {
               }
             />
             {errors[`email${index}`] && (
-              <p className="text-red-500 text-sm mt-1">{errors[`email${index}`]}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors[`email${index}`]}
+              </p>
             )}
           </div>
         </div>

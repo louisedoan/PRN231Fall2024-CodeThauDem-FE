@@ -158,7 +158,7 @@ const FlightRoutePage = () => {
   };
 
   const handleDeleteLocation = async (flightRouteId) => {
-    toast.success("Location deleted !");
+    //toast.success("Location deleted !");
     console.log("Deleting flightRouteId:", flightRouteId); // Debug log
     if (!flightRouteId) {
       console.error("Invalid flightRouteId:", flightRouteId);
