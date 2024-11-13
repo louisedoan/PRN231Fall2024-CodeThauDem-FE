@@ -19,6 +19,10 @@ const ActionStatus = ({ status }) => {
       statusClass = "bg-red-500";
       label = "Canceled";
     break;
+    case "Refund":
+      statusClass = "bg-red-500";
+      label = "Refunded";
+    break;
 
     case "Rejected":
       statusClass = "bg-red-500";

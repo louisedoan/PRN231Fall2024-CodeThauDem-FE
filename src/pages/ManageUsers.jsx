@@ -248,12 +248,6 @@ const ManageUsers = () => {
                           >
                             Update
                           </button>
-                          <button
-                            onClick={() => handleDelete(user)}
-                            className="bg-red-500 text-white py-1 px-3 rounded"
-                          >
-                            Delete
-                          </button>
                         </td>
                       )}
                     </tr>
